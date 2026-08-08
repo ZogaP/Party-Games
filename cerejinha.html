@@ -853,7 +853,7 @@ function duvidoTeamsScreen(){
   const g = room.gameData;
   const host = isHost();
   return `
-    <p class="sub">Monte dois times. Toque no nome pra alternar: sem time → Time 1 → Time 2 → sem time.</p>
+    <p class="sub">Monte dois times. Em cada rodada, <strong>1 pessoa de cada time NÃO saberá o tema secretamente</strong>, enquanto todos os outros saberão!</p>
     <div class="chip-row mb">
       ${room.players.map(p=>{
         const cls = g.teamA.includes(p.id) ? 'teamA' : g.teamB.includes(p.id) ? 'teamB' : '';
@@ -891,7 +891,9 @@ async function startDuvidoBattle(){
     g.stage='challenge';
     g.turnTeam='A';
     g.turnIdxA=0; g.turnIdxB=0;
-    g.currentPlayerId=g.teamA[0];
+    g.playerAId = g.teamA[0];
+    g.playerBId = g.teamB[0];
+    g.currentPlayerId = g.playerAId;
     g.category=randomDuvidoCategory(); g.required=null; g.challengerId=null;
     g.timerStartedAt=null; g.success=null;
     g.scoreA=0; g.scoreB=0;
@@ -899,12 +901,43 @@ async function startDuvidoBattle(){
 }
 function duvidoChallengeScreen(){
   const g = room.gameData;
+  const playerAId = g.playerAId || (g.teamA && g.teamA[0]);
+  const playerBId = g.playerBId || (g.teamB && g.teamB[0]);
+  const playerAName = (room.players.find(p=>p.id===playerAId)||{}).name || 'Alguém do Time 1';
+  const playerBName = (room.players.find(p=>p.id===playerBId)||{}).name || 'Alguém do Time 2';
+
   const targetTeam = teamOf(g.currentPlayerId);
   const targetName = (room.players.find(p=>p.id===g.currentPlayerId)||{}).name || '???';
   const myTeam = teamOf(me.id);
+
   let inner = duvidoScoreHeader();
   inner += `<div class="prompt-box"><div class="eyebrow">Na roda</div><div class="prompt-text">${esc(targetName)} (Time ${targetTeam==='A'?'1':'2'})</div></div>`;
-  inner += `<div class="card center"><label class="field-label">Tema sorteado</label><p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.15rem; margin:.2rem 0 0;">${esc(g.category)}</p></div>`;
+
+  const isSecret = (me.id === playerAId || me.id === playerBId);
+
+  if(isSecret){
+    inner += `
+      <div class="card center" style="border: 2px dashed var(--accent); background: rgba(224, 41, 75, 0.06);">
+        <label class="field-label" style="color:var(--accent); font-weight:700;">Tema Sorteado</label>
+        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.2rem; margin:.2rem 0 0; color:var(--accent);">
+          🔒 Secret (Você NÃO sabe o tema!)
+        </p>
+        <p class="hint" style="margin-top:.4rem; font-style:italic; color:#900020;">
+          Você e 1 pessoa do time adversário não sabem o tema desta rodada.
+        </p>
+      </div>
+    `;
+  } else {
+    inner += `
+      <div class="card center">
+        <label class="field-label">Tema sorteado</label>
+        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.15rem; margin:.2rem 0 0;">${esc(g.category)}</p>
+        <p class="hint" style="margin-top:.4rem;">
+          🤫 Não sabem o tema: <strong>${esc(playerAName)}</strong> (T1) e <strong>${esc(playerBName)}</strong> (T2)
+        </p>
+      </div>
+    `;
+  }
 
   if(g.required===null){
     clearDuvidoTicker();
@@ -945,7 +978,7 @@ function duvidoChallengeScreen(){
     } else {
       clearDuvidoTicker();
       inner += `
-        <div class="prompt-box"><div class="eyebrow">Tempo esgotado</div><div class="prompt-text">${g.required} itens de "${esc(g.category)}"</div></div>
+        <div class="prompt-box"><div class="eyebrow">Tempo esgotado</div><div class="prompt-text">${g.required} itens da rodada</div></div>
       `;
       if(isHost()){
         inner += `
@@ -993,13 +1026,25 @@ async function markDuvidoResult(success){
 }
 function duvidoResultScreen(){
   const g = room.gameData;
+  const playerAId = g.playerAId || (g.teamA && g.teamA[0]);
+  const playerBId = g.playerBId || (g.teamB && g.teamB[0]);
+  const playerAName = (room.players.find(p=>p.id===playerAId)||{}).name || 'Alguém do Time 1';
+  const playerBName = (room.players.find(p=>p.id===playerBId)||{}).name || 'Alguém do Time 2';
+
   const targetName = (room.players.find(p=>p.id===g.currentPlayerId)||{}).name || '???';
   let inner = duvidoScoreHeader();
   inner += `
     <div class="card center">
       <div style="font-size:2.2rem;">${g.success?'✅':'❌'}</div>
       <p style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1.1rem; margin:.5rem 0 0;">
-        ${esc(targetName)} ${g.success?'conseguiu':'não conseguiu'} dizer ${g.required} itens de "${esc(g.category)}"!
+        ${esc(targetName)} ${g.success?'conseguiu':'não conseguiu'} dizer ${g.required} itens!
+      </p>
+      <div style="margin-top:.8rem; padding:.6rem; background:rgba(224, 41, 75, 0.08); border-radius:12px;">
+        <span style="font-size:0.85rem; text-transform:uppercase; letter-spacing:0.05em; font-weight:700; color:var(--accent);">Tema Secreto Revelado</span>
+        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.2rem; margin:.2rem 0 0; color:var(--accent);">"${esc(g.category)}"</p>
+      </div>
+      <p class="hint" style="margin-top:.5rem;">
+        (Não sabiam o tema: <strong>${esc(playerAName)}</strong> e <strong>${esc(playerBName)}</strong>)
       </p>
     </div>
   `;
@@ -1015,9 +1060,11 @@ async function nextDuvidoTurn(){
     if(g.turnTeam==='A'){ g.turnIdxA = (g.turnIdxA+1) % g.teamA.length; }
     else { g.turnIdxB = (g.turnIdxB+1) % g.teamB.length; }
     g.turnTeam = g.turnTeam==='A' ? 'B' : 'A';
-    const arr = g.turnTeam==='A' ? g.teamA : g.teamB;
-    const idx = g.turnTeam==='A' ? g.turnIdxA : g.turnIdxB;
-    g.currentPlayerId = arr[idx];
+    
+    g.playerAId = g.teamA[g.turnIdxA % g.teamA.length];
+    g.playerBId = g.teamB[g.turnIdxB % g.teamB.length];
+    g.currentPlayerId = g.turnTeam==='A' ? g.playerAId : g.playerBId;
+
     g.category=randomDuvidoCategory(); g.required=null; g.challengerId=null;
     g.timerStartedAt=null; g.success=null;
     g.stage='challenge';
