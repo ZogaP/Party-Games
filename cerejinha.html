@@ -57,6 +57,7 @@ body{
   margin:0 auto;
   position:relative;
 }
+#bg-veil{position:fixed; inset:0; z-index:0; pointer-events:none; background:rgba(255,251,250,.58);}
 #app{max-width:480px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column; position:relative; z-index:1;}
 
 header{
@@ -92,8 +93,8 @@ header{
 
 main{flex:1; padding:1.1rem 1.1rem 2.5rem;}
 
-h1.title{font-family:'Space Grotesk',sans-serif; font-size:1.5rem; font-weight:700; margin:.2rem 0 .3rem; letter-spacing:-.01em;}
-p.sub{color:var(--dim); font-size:.94rem; line-height:1.5; margin:0 0 1.2rem;}
+h1.title{font-family:'Space Grotesk',sans-serif; font-size:1.5rem; font-weight:700; margin:.2rem 0 .3rem; letter-spacing:-.01em; text-shadow:0 1px 10px rgba(255,255,255,.85), 0 1px 3px rgba(255,255,255,.9);}
+p.sub{color:var(--dim); font-size:.94rem; line-height:1.5; margin:0 0 1.2rem; text-shadow:0 1px 8px rgba(255,255,255,.75), 0 1px 2px rgba(255,255,255,.8);}
 
 .card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem; margin-bottom:1rem;}
 .banner{background:var(--surface2); border:1px solid var(--border-strong); border-radius:var(--radius); padding:.85rem 1rem; margin-bottom:1rem; font-size:.85rem; color:var(--dim); line-height:1.5;}
@@ -163,7 +164,7 @@ label.field-label{display:block; font-size:.76rem; color:var(--dim); margin:.6re
 .rank{font-family:'Space Grotesk',sans-serif; font-weight:700; color:var(--dim); width:1.3rem; font-size:.88rem;}
 .score-val{margin-left:auto; font-family:'Space Grotesk',sans-serif; font-weight:700; color:var(--accent); font-size:.9rem;}
 
-.hint{font-size:.78rem; color:var(--dim); text-align:center; margin-top:.5rem;}
+.hint{font-size:.78rem; color:var(--dim); text-align:center; margin-top:.5rem; text-shadow:0 1px 8px rgba(255,255,255,.75), 0 1px 2px rgba(255,255,255,.8);}
 .error-msg{color:var(--danger); font-size:.83rem; margin:-.3rem 0 .6rem;}
 .center{text-align:center;}
 .mb{margin-bottom:1rem;}
@@ -190,6 +191,7 @@ label.field-label{display:block; font-size:.76rem; color:var(--dim); margin:.6re
 </style>
 </head>
 <body>
+<div id="bg-veil"></div>
 <div id="confetti-layer"></div>
 <div id="app">
   <header>
@@ -321,6 +323,17 @@ const CATEGORIES = {
   dificil: ["Elementos da tabela periódica","Países da África","Personagens de Harry Potter","Times da Champions League","Super-heróis Marvel ou DC","Rios do Brasil","Instrumentos musicais","Peças de um carro","Capitais dos estados brasileiros","Signos do zodíaco","Marcas de perfume","Personagens de desenho antigo"]
 };
 
+const CHARACTER_BANK = [
+  "Batman","Homer Simpson","Cleópatra","Michael Jackson","Anitta","Shrek","Napoleão Bonaparte",
+  "Harry Potter","Freddie Mercury","Mulher-Maravilha","Bob Esponja","Albert Einstein","Elvis Presley",
+  "Frida Kahlo","Darth Vader","Mona Lisa","Chapolin Colorado","Xuxa","Pelé","Silvio Santos",
+  "Cristiano Ronaldo","Hulk","Homem-Aranha","Branca de Neve","Mickey Mouse","Pikachu",
+  "Sherlock Holmes","Indiana Jones","Wandinha Addams","Barbie","Simba","Shakira","Beyoncé",
+  "Chico Bento","Emília (Sítio do Pica-pau Amarelo)","Zorro","James Bond","Yoda","Charlie Chaplin",
+  "Madonna","Homem de Ferro","Coringa","Dona Florinda","Seu Madruga","Luan Santana","Ivete Sangalo",
+  "Neymar","Rainha Elizabeth II","Steve Jobs","Willy Wonka"
+];
+
 const IMPOSTOR_PAIRS = [
   ["Praia","Piscina","Lugares"],
   ["Pizza","Esfiha","Comida"],
@@ -398,9 +411,6 @@ let joinError = '';
 let formLocked = false;
 let liveCount = { answered:0, total:0 };
 let selectedVote = null;
-let quemsouSubmitted = false;
-let duvidoDiffTab = 'facil';
-let duvidoCategoryDraft = null;
 let duvidoCountDraft = 5;
 let duvidoTickHandle = null;
 let impostorVoted = false;
@@ -415,8 +425,6 @@ function clearDuvidoTicker(){ if(duvidoTickHandle){ clearInterval(duvidoTickHand
 const roomKey = c => `room:${c}`;
 const ansKey = (c,r,p) => `room:${c}:ans:${r}:${p}`;
 const ansPrefix = (c,r) => `room:${c}:ans:${r}:`;
-const qsKey = (c,p) => `room:${c}:qs:${p}`;
-const qsPrefix = c => `room:${c}:qs:`;
 
 /* ---------- room persistence helpers ---------- */
 async function updateRoom(mutator){
@@ -456,7 +464,7 @@ function leaveRoom(){
   stopPolling();
   clearDuvidoTicker();
   roomCode = null; room = null; lastRoomJSON = null; homeMode = null;
-  formLocked = false; quemsouSubmitted = false;
+  formLocked = false;
   render();
 }
 
@@ -649,8 +657,8 @@ function scoreboardScreen(){
 
 async function startGame(gameId){
   clearDuvidoTicker();
-  formLocked = false; quemsouSubmitted=false; selectedVote=null;
-  duvidoDiffTab='facil'; duvidoCategoryDraft=null; duvidoCountDraft=5;
+  formLocked = false; selectedVote=null;
+  duvidoCountDraft=5;
   impostorVoted=false; selectedImpostorVote=null;
   quizDraftQuestions=[];
   await updateRoom(r=>{
@@ -660,10 +668,10 @@ async function startGame(gameId){
       r.gameData = { roundId:1, order: shuffle([...Array(TOP.length).keys()]), idx:0, promptText: TOP[0], revealed:false, results:null };
       r.gameData.promptText = TOP[r.gameData.order[0]];
     } else if(gameId==='quemsou'){
-      r.gameData = { stage:'submit', assignments:null };
+      r.gameData = { stage:'idle', assignments:null };
     } else if(gameId==='duvido'){
       r.gameData = { stage:'teams', teamA:[], teamB:[], timeLimit:60, turnTeam:'A', turnIdxA:0, turnIdxB:0,
-        currentPlayerId:null, category:null, difficulty:null, required:null, challengerId:null,
+        currentPlayerId:null, category:null, required:null, challengerId:null,
         timerStartedAt:null, success:null, scoreA:0, scoreB:0 };
     } else if(gameId==='impostor'){
       r.gameData = { stage:'idle', roundId:0, majorityWord:null, impostorWord:null, clue:null, impostorId:null, results:null };
@@ -771,24 +779,10 @@ async function nextTopRound(){
 /* ---------- Quem Sou Eu ---------- */
 function quemsouScreen(){
   const g = room.gameData;
-  if(g.stage==='submit'){
-    if(quemsouSubmitted){
-      formLocked = true;
-      return `
-        <div class="prompt-box">
-          <div class="eyebrow">Enviado!</div>
-          <div class="prompt-text">Aguardando o resto da galera</div>
-        </div>
-        <div class="status-line" id="qs-count-text">Carregando...</div>
-        ${isHost() ? `<button class="btn btn-primary" onclick="sortQuemSou()">Sortear identidades</button>` : ''}
-      `;
-    }
-    formLocked = true;
-    setTimeout(()=>document.getElementById('qs-input')?.focus(), 50);
+  if(g.stage==='idle'){
     return `
-      <p class="sub">Digite o nome de um personagem, famoso ou figura conhecida do grupo. Alguém vai "virar" essa pessoa sem saber!</p>
-      <input type="text" id="qs-input" maxlength="30" placeholder="Ex: Batman, Anitta, Vovó da família...">
-      <button class="btn btn-primary" onclick="submitQuemSou()">Enviar</button>
+      <p class="sub">O app já vem com um banco de personagens conhecidos — é só sortear! Cada um vai "virar" um personagem sem saber qual, e só os outros conseguem ver.</p>
+      ${isHost() ? `<button class="btn btn-primary" onclick="sortQuemSou()">Sortear personagens</button>` : `<p class="hint">Esperando o anfitrião(a) sortear...</p>`}
     `;
   }
   if(g.stage==='play'){
@@ -819,56 +813,23 @@ function quemsouScreen(){
           <div class="whois">${esc(g.assignments[p.id]||'—')}</div>
         </div>`).join('')}
     </div>
+    ${isHost() ? `<button class="btn btn-outline" onclick="sortQuemSou()">Sortear de novo</button>` : ''}
   `;
 }
-async function submitQuemSou(){
-  const val = document.getElementById('qs-input').value.trim();
-  if(!val) return;
-  await storageSet(qsKey(roomCode, me.id), val, true);
-  quemsouSubmitted = true;
-  formLocked = false;
-  render();
-  pollQsCount();
-}
-async function pollQsCount(){
-  if(!room || room.gameData.stage!=='submit') return;
-  const listRes = await storageList(qsPrefix(roomCode), true);
-  const el = document.getElementById('qs-count-text');
-  if(el) el.textContent = `${listRes.keys.length}/${room.players.length} enviaram`;
-}
 async function sortQuemSou(){
-  const listRes = await storageList(qsPrefix(roomCode), true);
-  const subs = [];
-  for(const k of listRes.keys){
-    const v = await storageGet(k, true);
-    const pid = k.split(':').pop();
-    if(v && room.players.find(p=>p.id===pid)) subs.push({id:pid, name:v.value});
-  }
-  if(subs.length < 2){ alert('Precisa de pelo menos 2 pessoas enviando um nome.'); return; }
-  const ids = subs.map(s=>s.id);
-  let shuffled;
-  let tries=0;
-  do{ shuffled = shuffle(ids); tries++; } while(shuffled.some((id,i)=>id===ids[i]) && tries<60);
-  for(let i=0;i<ids.length;i++){
-    if(shuffled[i]===ids[i]){
-      const j=(i+1)%ids.length;
-      [shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];
-    }
-  }
+  if(room.players.length < 2){ alert('Precisa de pelo menos 2 pessoas na sala.'); return; }
+  const chars = shuffle(CHARACTER_BANK).slice(0, room.players.length);
+  const playerIds = shuffle(room.players.map(p=>p.id));
   const assignments = {};
-  ids.forEach((id,i)=>{ assignments[id] = subs.find(s=>s.id===shuffled[i]).name; });
-  formLocked = false;
-  await updateRoom(r=>{ r.gameData.stage='play'; r.gameData.assignments=assignments; });
+  playerIds.forEach((pid,i)=>{ assignments[pid] = chars[i]; });
+  await updateRoom(r=>{ r.gameData = { stage:'play', assignments }; });
   burstConfetti(22);
 }
 async function revealQuemSou(){
-  formLocked = false;
   await updateRoom(r=>{ r.gameData.stage='reveal'; });
   burstConfetti(28);
 }
-function updateFormStatus(){
-  if(room.activeGame==='quemsou') pollQsCount();
-}
+function updateFormStatus(){}
 
 /* ---------- Duvido (aposte quantos itens a pessoa fala) ---------- */
 function teamOf(pid){
@@ -918,16 +879,20 @@ async function cycleDuvidoTeam(pid){
   });
 }
 async function setDuvidoTime(t){ await updateRoom(r=>{ r.gameData.timeLimit=t; }); }
+function randomDuvidoCategory(){
+  const pool = [...CATEGORIES.facil, ...CATEGORIES.media, ...CATEGORIES.dificil];
+  return pool[Math.floor(Math.random()*pool.length)];
+}
 async function startDuvidoBattle(){
   clearDuvidoTicker();
-  duvidoCountDraft = 5; duvidoCategoryDraft = null;
+  duvidoCountDraft = 5;
   await updateRoom(r=>{
     const g = r.gameData;
     g.stage='challenge';
     g.turnTeam='A';
     g.turnIdxA=0; g.turnIdxB=0;
     g.currentPlayerId=g.teamA[0];
-    g.category=null; g.difficulty=null; g.required=null; g.challengerId=null;
+    g.category=randomDuvidoCategory(); g.required=null; g.challengerId=null;
     g.timerStartedAt=null; g.success=null;
     g.scoreA=0; g.scoreB=0;
   });
@@ -939,35 +904,27 @@ function duvidoChallengeScreen(){
   const myTeam = teamOf(me.id);
   let inner = duvidoScoreHeader();
   inner += `<div class="prompt-box"><div class="eyebrow">Na roda</div><div class="prompt-text">${esc(targetName)} (Time ${targetTeam==='A'?'1':'2'})</div></div>`;
+  inner += `<div class="card center"><label class="field-label">Tema sorteado</label><p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.15rem; margin:.2rem 0 0;">${esc(g.category)}</p></div>`;
 
-  if(g.category===null){
+  if(g.required===null){
     clearDuvidoTicker();
     if(myTeam && myTeam!==targetTeam){
       inner += `
-        <p class="sub">Prepare o desafio pro time adversário! Escolham a categoria e decidam entre vocês quantos itens ${esc(targetName)} precisa dizer em ${g.timeLimit}s — essa escolha é só do seu time.</p>
-        <div class="tabs">
-          <div class="tab ${duvidoDiffTab==='facil'?'active':''}" onclick="setDuvidoDiffTab('facil')">Fácil</div>
-          <div class="tab ${duvidoDiffTab==='media'?'active':''}" onclick="setDuvidoDiffTab('media')">Média</div>
-          <div class="tab ${duvidoDiffTab==='dificil'?'active':''}" onclick="setDuvidoDiffTab('dificil')">Difícil</div>
-        </div>
-        <div class="chip-row mb">${CATEGORIES[duvidoDiffTab].map(c=>`<div class="pick-chip ${duvidoCategoryDraft===c?'selected':''}" onclick="pickDuvidoCategoryDraft('${c.replace(/'/g,"\\'")}')">${esc(c)}</div>`).join('')}</div>
-        <label class="field-label">Quantos itens ${esc(targetName)} precisa dizer?</label>
+        <p class="sub">Decidam entre vocês quantos itens ${esc(targetName)} precisa dizer em ${g.timeLimit}s — essa escolha é só do seu time.</p>
         <div class="stepper">
           <button onclick="adjustDuvidoCount(-1)">−</button>
           <div class="req-num">${duvidoCountDraft}</div>
           <button onclick="adjustDuvidoCount(1)">+</button>
         </div>
-        <button class="btn btn-primary" ${duvidoCategoryDraft?'':'disabled'} onclick="confirmDuvidoChallenge()">Desafiar!</button>
+        <button class="btn btn-primary" onclick="confirmDuvidoChallenge()">Desafiar!</button>
       `;
     } else {
-      inner += `<p class="hint">O time adversário está preparando o desafio...</p>`;
+      inner += `<p class="hint">O time adversário está decidindo quantos itens você vai precisar dizer...</p>`;
     }
   } else if(!g.timerStartedAt){
     clearDuvidoTicker();
     inner += `
       <div class="card">
-        <label class="field-label">Categoria</label>
-        <p style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1.05rem; margin:.2rem 0 .8rem;">${esc(g.category)}</p>
         <label class="field-label">Precisa dizer</label>
         <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.35rem; margin:.2rem 0;">${g.required} itens em ${g.timeLimit}s</p>
       </div>`;
@@ -981,17 +938,14 @@ function duvidoChallengeScreen(){
     if(remaining > 0){
       ensureDuvidoTicker();
       inner += `
-        <div class="card">
-          <label class="field-label">Categoria</label>
-          <p style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1.05rem; margin:.2rem 0;">${esc(g.category)} — ${g.required} itens</p>
-        </div>
+        <div class="card center"><label class="field-label">Precisa dizer</label><p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.1rem; margin:.2rem 0 0;">${g.required} itens</p></div>
         <div class="timer-num">${remaining}s</div>
         <p class="hint">${esc(targetName)}, fale em voz alta!</p>
       `;
     } else {
       clearDuvidoTicker();
       inner += `
-        <div class="prompt-box"><div class="eyebrow">Tempo esgotado</div><div class="prompt-text">${esc(g.category)} — ${g.required} itens</div></div>
+        <div class="prompt-box"><div class="eyebrow">Tempo esgotado</div><div class="prompt-text">${g.required} itens de "${esc(g.category)}"</div></div>
       `;
       if(isHost()){
         inner += `
@@ -1006,14 +960,9 @@ function duvidoChallengeScreen(){
   }
   return inner;
 }
-function setDuvidoDiffTab(t){ duvidoDiffTab=t; duvidoCategoryDraft=null; render(); }
-function pickDuvidoCategoryDraft(cat){ duvidoCategoryDraft=cat; render(); }
 function adjustDuvidoCount(delta){ duvidoCountDraft = Math.max(1, duvidoCountDraft+delta); render(); }
 async function confirmDuvidoChallenge(){
-  if(!duvidoCategoryDraft) return;
   await updateRoom(r=>{
-    r.gameData.category=duvidoCategoryDraft;
-    r.gameData.difficulty=duvidoDiffTab;
     r.gameData.required=duvidoCountDraft;
     r.gameData.challengerId=me.id;
     r.gameData.timerStartedAt=null;
@@ -1060,7 +1009,7 @@ function duvidoResultScreen(){
 }
 async function nextDuvidoTurn(){
   clearDuvidoTicker();
-  duvidoCountDraft = 5; duvidoCategoryDraft = null;
+  duvidoCountDraft = 5;
   await updateRoom(r=>{
     const g = r.gameData;
     if(g.turnTeam==='A'){ g.turnIdxA = (g.turnIdxA+1) % g.teamA.length; }
@@ -1069,7 +1018,7 @@ async function nextDuvidoTurn(){
     const arr = g.turnTeam==='A' ? g.teamA : g.teamB;
     const idx = g.turnTeam==='A' ? g.turnIdxA : g.turnIdxB;
     g.currentPlayerId = arr[idx];
-    g.category=null; g.difficulty=null; g.required=null; g.challengerId=null;
+    g.category=randomDuvidoCategory(); g.required=null; g.challengerId=null;
     g.timerStartedAt=null; g.success=null;
     g.stage='challenge';
   });
