@@ -1,0 +1,1318 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cerejinha</title>
+<meta name="description" content="Jogos de festa multiplayer, tema cerejinha — cada um no proprio celular.">
+<meta name="theme-color" content="#1A0E10">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Cerejinha">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg:#1A0E10;
+  --surface:#241318;
+  --surface2:#2E1A20;
+  --border:rgba(255,225,225,.09);
+  --border-strong:rgba(255,225,225,.18);
+  --accent:#FF3355;
+  --accent-ink:#3A0812;
+  --success:#4CAF6D;
+  --success-ink:#06301A;
+  --danger:#E63950;
+  --danger-ink:#3A0808;
+  --info:#4CAF6D;
+  --info-ink:#06301A;
+  --text:#FBEAE7;
+  --dim:#B99AA0;
+  --faint:#6B4A50;
+  --radius:14px;
+}
+*{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Inter',sans-serif;
+  min-height:100vh;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+#app{max-width:520px; margin:0 auto; min-height:100vh; display:flex; flex-direction:column;}
+
+header{
+  position:sticky; top:0; z-index:10; background:var(--bg);
+  border-bottom:1px solid var(--border);
+  padding:calc(env(safe-area-inset-top) + .8rem) 1.1rem .8rem;
+  display:flex; align-items:center; gap:.6rem;
+}
+.app-icon{width:30px; height:30px; border-radius:9px; background:var(--surface2); border:1px solid var(--border-strong);
+  display:flex; align-items:center; justify-content:center; font-size:1.05rem; flex-shrink:0;}
+.wordmark{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.15rem; letter-spacing:-.01em;}
+.header-spacer{flex:1;}
+.install-btn{background:var(--surface2); border:1px solid var(--border-strong); color:var(--text);
+  font-size:.78rem; font-weight:600; padding:.4rem .7rem; border-radius:10px; cursor:pointer; font-family:'Inter',sans-serif;}
+
+.ticket-chip{display:flex; align-items:center; gap:.5rem; background:var(--surface2);
+  border:1px dashed var(--border-strong); padding:.35rem .7rem; border-radius:10px;}
+.ticket-chip .code{font-family:'Space Grotesk',sans-serif; font-weight:700; letter-spacing:.12em; font-size:.92rem;}
+.ticket-chip .count{color:var(--dim); font-size:.72rem; font-weight:600;}
+
+main{flex:1; padding:1.1rem 1.1rem 2.5rem;}
+
+h1.title{font-family:'Space Grotesk',sans-serif; font-size:1.5rem; font-weight:700; margin:.2rem 0 .3rem; letter-spacing:-.01em;}
+p.sub{color:var(--dim); font-size:.94rem; line-height:1.5; margin:0 0 1.2rem;}
+
+.card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1.1rem; margin-bottom:1rem;}
+.banner{background:var(--surface2); border:1px solid var(--border-strong); border-radius:var(--radius); padding:.85rem 1rem; margin-bottom:1rem; font-size:.85rem; color:var(--dim); line-height:1.5;}
+
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:.5rem;
+  font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:.98rem;
+  padding:.8rem 1.2rem; border-radius:12px; border:1px solid transparent; cursor:pointer;
+  width:100%; transition:transform .1s ease;
+}
+.btn:active{transform:scale(.97);}
+.btn-primary{background:var(--accent); color:var(--accent-ink);}
+.btn-success{background:var(--success); color:var(--success-ink);}
+.btn-danger{background:var(--danger); color:var(--danger-ink);}
+.btn-outline{background:transparent; border-color:var(--border-strong); color:var(--text);}
+.btn-ghost{background:transparent; border-color:transparent; color:var(--dim);}
+.btn[disabled]{opacity:.4; pointer-events:none;}
+.btn-row{display:flex; gap:.6rem;}
+.btn-sm{padding:.55rem .85rem; font-size:.85rem; width:auto;}
+
+input[type=text]{
+  width:100%; background:var(--surface2); border:1px solid var(--border-strong); color:var(--text);
+  padding:.8rem .9rem; border-radius:12px; font-size:1rem; font-family:'Inter',sans-serif; margin-bottom:.75rem;
+}
+input[type=text]:focus{outline:none; border-color:var(--accent);}
+label.field-label{display:block; font-size:.76rem; color:var(--dim); margin:.6rem 0 .35rem; font-weight:600; text-transform:uppercase; letter-spacing:.04em;}
+
+.tabs{display:flex; gap:.5rem; margin-bottom:1rem;}
+.tab{flex:1; text-align:center; padding:.6rem; border-radius:10px; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:.88rem; cursor:pointer; color:var(--dim); border:1px solid var(--border);}
+.tab.active{background:var(--surface2); color:var(--text); border-color:var(--accent);}
+
+.player-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:.5rem;}
+.player-list li{display:flex; align-items:center; gap:.6rem; background:var(--surface2); padding:.6rem .8rem; border-radius:11px; font-weight:600; font-size:.92rem;}
+.avatar{width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:.78rem; flex-shrink:0; color:#fff;}
+.crown{margin-left:auto; font-size:.95rem;}
+
+.game-grid{display:grid; grid-template-columns:1fr 1fr; gap:.7rem;}
+.game-card{background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:1rem .85rem; cursor:pointer;}
+.game-card:active{transform:scale(.96);}
+.game-card .badge{width:34px; height:34px; border-radius:10px; background:var(--surface2); display:flex; align-items:center; justify-content:center; font-size:1.15rem; margin-bottom:.5rem;}
+.game-card .gname{font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:.92rem;}
+.game-card .gdesc{font-size:.72rem; color:var(--dim); margin-top:.2rem; line-height:1.3;}
+
+.prompt-box{background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius); padding:1.4rem 1.1rem; text-align:center; margin-bottom:1.1rem;}
+.prompt-box .eyebrow{font-size:.72rem; color:var(--dim); text-transform:uppercase; letter-spacing:.08em; font-weight:700; margin-bottom:.5rem;}
+.prompt-box .prompt-text{font-family:'Space Grotesk',sans-serif; font-size:1.2rem; font-weight:700; line-height:1.35;}
+
+.status-line{text-align:center; color:var(--dim); font-size:.83rem; margin:.6rem 0 1rem;}
+
+.result-row{display:flex; align-items:center; gap:.6rem; background:var(--surface2); padding:.55rem .8rem; border-radius:10px; margin-bottom:.4rem;}
+.result-row .bar{height:8px; border-radius:5px; background:var(--accent); flex-shrink:0;}
+.result-name{font-weight:600; font-size:.88rem; flex:1;}
+.result-count{font-family:'Space Grotesk',sans-serif; font-weight:700; color:var(--dim); font-size:.83rem;}
+
+.identity-card{display:flex; align-items:center; gap:.65rem; background:var(--surface2); padding:.75rem .85rem; border-radius:11px; margin-bottom:.5rem;}
+.identity-card .who{font-weight:600; font-size:.9rem;}
+.identity-card .whois{margin-left:auto; font-family:'Space Grotesk',sans-serif; font-weight:600; color:var(--success); font-size:.88rem;}
+.identity-card.locked .whois{color:var(--faint); letter-spacing:.15em;}
+
+.chip-row{display:flex; flex-wrap:wrap; gap:.5rem; margin:.7rem 0;}
+.pick-chip{background:var(--surface2); border:1px solid var(--border-strong); padding:.5rem .85rem; border-radius:10px; font-weight:600; font-size:.85rem; cursor:pointer;}
+.pick-chip.selected{background:var(--accent); border-color:var(--accent); color:var(--accent-ink);}
+.pick-chip.teamA{border-color:var(--accent); color:var(--accent);}
+.pick-chip.teamB{border-color:var(--info); color:var(--info);}
+
+.scoreboard-row{display:flex; align-items:center; gap:.65rem; background:var(--surface2); padding:.6rem .85rem; border-radius:11px; margin-bottom:.4rem;}
+.rank{font-family:'Space Grotesk',sans-serif; font-weight:700; color:var(--dim); width:1.3rem; font-size:.88rem;}
+.score-val{margin-left:auto; font-family:'Space Grotesk',sans-serif; font-weight:700; color:var(--accent); font-size:.9rem;}
+
+.hint{font-size:.78rem; color:var(--dim); text-align:center; margin-top:.5rem;}
+.error-msg{color:var(--danger); font-size:.83rem; margin:-.3rem 0 .6rem;}
+.center{text-align:center;}
+.mb{margin-bottom:1rem;}
+
+.team-score-row{display:flex; justify-content:space-between; align-items:center; background:var(--surface2); border:1px solid var(--border); border-radius:12px; padding:.75rem 1rem; margin-bottom:1.1rem; font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:.92rem;}
+.team-score-row .vs{color:var(--dim); font-size:.72rem;}
+.timer-num{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:3.6rem; text-align:center; margin:.4rem 0; color:var(--accent); font-variant-numeric:tabular-nums;}
+.team-col{background:var(--surface2); border:1px solid var(--border); border-radius:11px; padding:.75rem .85rem; margin-bottom:.6rem; font-size:.85rem; color:var(--dim);}
+.team-col h4{margin:0 0 .3rem; font-family:'Space Grotesk',sans-serif; font-size:.88rem; color:var(--text);}
+.stepper{display:flex; align-items:center; justify-content:center; gap:1.1rem; margin:.7rem 0 1rem;}
+.stepper button{width:44px; height:44px; border-radius:12px; border:1px solid var(--border-strong); background:var(--surface2); color:var(--text); font-size:1.3rem; cursor:pointer; font-family:'Space Grotesk',sans-serif;}
+.stepper .req-num{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.6rem; min-width:2.6rem; text-align:center;}
+
+.impostor-card.red{border-color:rgba(255,82,82,.45); background:rgba(255,82,82,.08);}
+
+#confetti-layer{position:fixed; inset:0; pointer-events:none; z-index:50; overflow:hidden;}
+.confetto{position:absolute; top:-5%; width:7px; height:12px; opacity:0; border-radius:2px; animation:confFall 1.5s ease-in forwards;}
+@keyframes confFall{
+  0%{opacity:1; transform:translateY(0) rotate(0deg);}
+  100%{opacity:0; transform:translateY(110vh) rotate(500deg);}
+}
+
+.foot-actions{display:flex; gap:.6rem; margin-top:1.2rem;}
+</style>
+</head>
+<body>
+<div id="confetti-layer"></div>
+<div id="app">
+  <header>
+    <div class="app-icon">🍒</div>
+    <div class="wordmark">Cerejinha</div>
+    <div class="header-spacer"></div>
+    <div id="install-slot"></div>
+    <div id="header-chip"></div>
+  </header>
+  <main id="main"></main>
+</div>
+
+<script>
+/* =========================================================
+   CONFIGURAÇÃO DO FIREBASE — cole aqui a config do seu projeto.
+   Veja o passo a passo que o Claude te mandou no chat.
+   ========================================================= */
+const firebaseConfig = {
+  apiKey: "COLE_AQUI_SUA_API_KEY",
+  authDomain: "SEU-PROJETO.firebaseapp.com",
+  databaseURL: "https://SEU-PROJETO-default-rtdb.firebaseio.com",
+  projectId: "SEU-PROJETO",
+  storageBucket: "SEU-PROJETO.appspot.com",
+  messagingSenderId: "000000000000",
+  appId: "1:000000000000:web:xxxxxxxxxxxxxxxxxxxxxx"
+};
+/* ========================================================= */
+
+let db = null;
+try {
+  if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "COLE_AQUI_SUA_API_KEY" && firebaseConfig.databaseURL) {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.database();
+  }
+} catch (e) { console.error('Firebase init failed', e); db = null; }
+const STORAGE_AVAILABLE = !!db;
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{ navigator.serviceWorker.register('./sw.js').catch(()=>{}); });
+}
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', (e)=>{ e.preventDefault(); deferredInstallPrompt = e; render(); });
+async function installApp(){
+  if(!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+  render();
+}
+
+/* ---------- utils ---------- */
+const ACCENTS = ['#FF3355','#E63950','#4CAF6D','#FBC4B0','#8B5A2B','#FF7A93'];
+function uid(){ return Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4); }
+function genCode(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let c=''; for(let i=0;i<4;i++) c+=chars[Math.floor(Math.random()*chars.length)];
+  return c;
+}
+function initials(name){ return (name||'?').trim().split(/\s+/).map(w=>w[0]).slice(0,2).join('').toUpperCase(); }
+function colorFor(id){ let h=0; for(const c of id) h=(h*31+c.charCodeAt(0))>>>0; return ACCENTS[h%ACCENTS.length]; }
+function esc(s){ return (s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function shuffle(arr){ const a=[...arr]; for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+async function storageGet(key, shared){
+  if(!db) return null;
+  try{
+    const snap = await db.ref(key).once('value');
+    if(!snap.exists()) return null;
+    return { key, value: snap.val(), shared };
+  }catch(e){ return null; }
+}
+async function storageSet(key, value, shared){
+  if(!db) return null;
+  try{
+    await db.ref(key).set(value);
+    return { key, value, shared };
+  }catch(e){ console.error('storage.set failed', e); return null; }
+}
+async function storageList(prefix, shared){
+  if(!db) return { keys: [] };
+  try{
+    const snap = await db.ref().orderByKey().startAt(prefix).endAt(prefix + '\uf8ff').once('value');
+    const keys = [];
+    snap.forEach(child=>{ keys.push(child.key); });
+    return { keys };
+  }catch(e){ return { keys: [] }; }
+}
+
+function burstConfetti(n){
+  const layer = document.getElementById('confetti-layer');
+  for(let i=0;i<n;i++){
+    const el = document.createElement('div');
+    el.className='confetto';
+    el.style.left = (Math.random()*100)+'%';
+    el.style.background = ACCENTS[Math.floor(Math.random()*ACCENTS.length)];
+    el.style.animationDelay = (Math.random()*.4)+'s';
+    el.style.animationDuration = (1.1+Math.random()*.7)+'s';
+    layer.appendChild(el);
+    setTimeout(()=>el.remove(), 2100);
+  }
+}
+
+/* ---------- content banks ---------- */
+const TOP = [
+"Mais provável de virar famoso(a) nas redes",
+"Mais provável de chorar assistindo um filme",
+"Mais provável de dormir numa festa",
+"Mais provável de ganhar na loteria e sumir",
+"Mais provável de virar chef de cozinha",
+"Mais provável de se perder usando GPS",
+"Mais provável de casar primeiro",
+"Mais provável de virar influencer fitness",
+"Mais provável de esquecer o próprio aniversário",
+"Mais provável de sobreviver a um apocalipse zumbi",
+"Mais provável de ficar rico e não avisar ninguém",
+"Mais provável de dançar até de manhã",
+"Mais provável de adotar 10 pets",
+"Mais provável de virar stand-up comedian",
+"Mais provável de responder mensagem depois de 3 dias",
+"Mais provável de organizar a próxima festa"
+];
+
+const CATEGORIES = {
+  facil: ["Frutas","Sabores de sorvete","Sabores de bolo ou recheio","Cores","Animais","Países","Times de futebol brasileiros","Marcas de carro","Objetos de cozinha","Profissões","Nomes próprios","Marcas de refrigerante ou bebida"],
+  media: ["Filmes da Disney ou Pixar","Séries de TV","Cantores(as) brasileiros(as)","Desenhos animados","Capitais de países","Personagens de novela","Jogos de videogame famosos","Apps de celular","Doces ou sobremesas brasileiras","Marcas de roupa","Reality shows ou programas de TV","Memes ou trends do TikTok"],
+  dificil: ["Elementos da tabela periódica","Países da África","Personagens de Harry Potter","Times da Champions League","Super-heróis Marvel ou DC","Rios do Brasil","Instrumentos musicais","Peças de um carro","Capitais dos estados brasileiros","Signos do zodíaco","Marcas de perfume","Personagens de desenho antigo"]
+};
+
+const IMPOSTOR_PAIRS = [
+  ["Praia","Piscina","Lugares"],
+  ["Pizza","Esfiha","Comida"],
+  ["Cachorro","Gato","Animais de estimação"],
+  ["Netflix","Amazon Prime Video","Entretenimento e tecnologia"],
+  ["Professor","Palestrante","Profissões"],
+  ["Futebol","Futsal","Esporte"],
+  ["Carnaval","Festa Junina","Festas"],
+  ["WhatsApp","Telegram","Aplicativos"],
+  ["Padaria","Confeitaria","Comida"],
+  ["Avião","Helicóptero","Transporte"],
+  ["Chocolate","Brigadeiro","Doces"],
+  ["Academia","Crossfit","Esporte e saúde"],
+  ["Uber","99","Transporte e apps"],
+  ["Casamento","Noivado","Celebrações"],
+  ["Verão","Primavera","Estações do ano"],
+  ["Instagram","TikTok","Redes sociais"],
+  ["Faculdade","Cursinho","Educação"],
+  ["Sorvete","Açaí","Sobremesas"],
+  ["Hospital","Posto de saúde","Saúde"],
+  ["Cerveja","Vinho","Bebidas"],
+  ["Show","Peça de teatro","Entretenimento ao vivo"],
+  ["Metrô","Ônibus","Transporte público"],
+  ["Igreja","Templo","Locais religiosos"],
+  ["Xbox","PlayStation","Videogames"]
+];
+
+const TOP10_THEMES = [
+  { theme:"Maiores estádios do Brasil (por capacidade)", answers:["Maracanã","Mané Garrincha","MorumBis","Castelão (CE)","Mineirão","Arruda","Arena do Grêmio","Mangueirão","Beira-Rio","Arena Fonte Nova"] },
+  { theme:"Países mais populosos do mundo", answers:["Índia","China","Estados Unidos","Indonésia","Paquistão","Nigéria","Brasil","Bangladesh","Rússia","México"] },
+  { theme:"Times com mais títulos do Campeonato Brasileiro", answers:["Palmeiras","Santos","Flamengo","Corinthians","São Paulo","Cruzeiro","Vasco","Fluminense","Internacional","Atlético-MG"] },
+  { theme:"Filmes com maior bilheteria mundial de todos os tempos", answers:["Avatar","Vingadores: Ultimato","Avatar: O Caminho da Água","Titanic","Ne Zha 2","Star Wars: O Despertar da Força","Vingadores: Guerra Infinita","Homem-Aranha: Sem Volta Para Casa","Zootopia 2","Divertida Mente 2"] },
+  { theme:"Estados brasileiros mais populosos", answers:["São Paulo","Minas Gerais","Rio de Janeiro","Bahia","Paraná","Rio Grande do Sul","Pernambuco","Ceará","Pará","Santa Catarina"] },
+  { theme:"Maiores países do mundo em área", answers:["Rússia","Canadá","China","Estados Unidos","Brasil","Austrália","Índia","Argentina","Cazaquistão","Argélia"] },
+  { theme:"Rios mais longos do mundo", answers:["Nilo","Amazonas","Yangtzé","Mississippi-Missouri","Yenissei","Rio Amarelo (Huang He)","Obi-Irtysh","Rio da Prata-Paraná","Congo","Amur"] },
+  { theme:"Montanhas mais altas do mundo", answers:["Everest","K2","Kangchenjunga","Lhotse","Makalu","Cho Oyu","Dhaulagiri","Manaslu","Nanga Parbat","Annapurna"] },
+  { theme:"Animais terrestres mais rápidos do mundo", answers:["Guepardo","Antílope-pronghorn","Springbok (gazela-saltadora)","Gnu","Leão","Cavalo selvagem","Coiote","Hiena","Zebra","Canguru-vermelho"] },
+  { theme:"Cidades mais populosas do Brasil", answers:["São Paulo","Rio de Janeiro","Brasília","Salvador","Fortaleza","Belo Horizonte","Manaus","Curitiba","Goiânia","Recife"] }
+];
+
+const QUIZ_SUGGESTIONS = [
+  "Qual é a comida favorita da Isabela?",
+  "Qual é o maior medo dela?",
+  "Qual é a série favorita dela?",
+  "Qual é a cor favorita da Isabela?",
+  "O que ela mais gosta de fazer no fim de semana?",
+  "Qual é a maior mania ou hábito engraçado dela?",
+  "Qual é o animal favorito dela?",
+  "Qual é a sobremesa favorita dela?",
+  "O que ela faz quando está estressada?",
+  "Qual é o time de futebol dela (ou se ela nem liga)?",
+  "Em que cidade ela nasceu?",
+  "Qual é a profissão ou curso dela?",
+  "Qual é o signo dela?",
+  "Qual é a estação do ano favorita dela?",
+  "O que ela sempre pede num bar ou restaurante?",
+  "Qual é a música que ela mais canta no chuveiro ou no carro?",
+  "Qual é o talento escondido dela?",
+  "Qual foi o apelido de infância dela?",
+  "Qual é a rede social que ela mais usa?",
+  "Se ela pudesse ter um superpoder, qual seria?",
+  "Qual é o filme ou livro favorito dela?",
+  "O que ela pede quando está de ressaca ou resfriada?",
+  "Qual é a maior fobia ou coisa que ela odeia?"
+];
+
+/* ---------- state ---------- */
+let me = { id:null, name:'' };
+let roomCode = null;
+let room = null;
+let lastRoomJSON = null;
+let pollHandle = null;
+let homeMode = null;
+let joinError = '';
+let formLocked = false;
+let liveCount = { answered:0, total:0 };
+let selectedVote = null;
+let quemsouSubmitted = false;
+let duvidoDiffTab = 'facil';
+let duvidoCategoryDraft = null;
+let duvidoCountDraft = 5;
+let duvidoTickHandle = null;
+let impostorVoted = false;
+let selectedImpostorVote = null;
+let quizDraftQuestions = [];
+
+function isHost(){ return room && me.id === room.hostId; }
+function ensureDuvidoTicker(){ if(!duvidoTickHandle){ duvidoTickHandle = setInterval(()=>render(), 1000); } }
+function clearDuvidoTicker(){ if(duvidoTickHandle){ clearInterval(duvidoTickHandle); duvidoTickHandle=null; } }
+
+/* ---------- keys ---------- */
+const roomKey = c => `room:${c}`;
+const ansKey = (c,r,p) => `room:${c}:ans:${r}:${p}`;
+const ansPrefix = (c,r) => `room:${c}:ans:${r}:`;
+const qsKey = (c,p) => `room:${c}:qs:${p}`;
+const qsPrefix = c => `room:${c}:qs:`;
+
+/* ---------- room persistence helpers ---------- */
+async function updateRoom(mutator){
+  const res = await storageGet(roomKey(roomCode), true);
+  let r = res ? JSON.parse(res.value) : room;
+  mutator(r);
+  r.updatedAt = Date.now();
+  await storageSet(roomKey(roomCode), JSON.stringify(r), true);
+  room = r; lastRoomJSON = JSON.stringify(r);
+  render();
+}
+
+async function createRoom(name){
+  me.id = uid(); me.name = name.trim();
+  const code = genCode();
+  const r = { code, hostId: me.id, players:[{id:me.id, name:me.name, score:0}],
+    phase:'lobby', activeGame:null, gameData:{}, createdAt:Date.now(), updatedAt:Date.now() };
+  await storageSet(roomKey(code), JSON.stringify(r), true);
+  roomCode = code; room = r; lastRoomJSON = JSON.stringify(r);
+  startPolling(); render();
+}
+
+async function joinRoom(code, name){
+  code = code.toUpperCase().trim();
+  const res = await storageGet(roomKey(code), true);
+  if(!res){ joinError = 'Sala não encontrada. Confira o código.'; render(); return; }
+  let r = JSON.parse(res.value);
+  me.id = uid(); me.name = name.trim();
+  if(!r.players.find(p=>p.id===me.id)) r.players.push({id:me.id, name:me.name, score:0});
+  r.updatedAt = Date.now();
+  await storageSet(roomKey(code), JSON.stringify(r), true);
+  roomCode = code; room = r; lastRoomJSON = JSON.stringify(r); joinError='';
+  startPolling(); render();
+}
+
+function leaveRoom(){
+  stopPolling();
+  clearDuvidoTicker();
+  roomCode = null; room = null; lastRoomJSON = null; homeMode = null;
+  formLocked = false; quemsouSubmitted = false;
+  render();
+}
+
+function startPolling(){
+  stopPolling();
+  pollHandle = setInterval(pollRoom, 2200);
+  pollRoom();
+}
+function stopPolling(){ if(pollHandle) clearInterval(pollHandle); pollHandle = null; }
+
+async function pollRoom(){
+  if(!roomCode) return;
+  const res = await storageGet(roomKey(roomCode), true);
+  if(!res) return;
+  if(res.value !== lastRoomJSON){
+    lastRoomJSON = res.value;
+    room = JSON.parse(res.value);
+    if(formLocked) updateFormStatus(); else render();
+  } else if(!formLocked){
+    await refreshLiveCount();
+  }
+}
+
+async function refreshLiveCount(){
+  if(!room || room.phase!=='game') return;
+  const g = room.gameData || {};
+  let prefix = null, total = room.players.length, label = 'responderam';
+  if(room.activeGame==='top' && g.roundId && !g.revealed){
+    prefix = ansPrefix(roomCode, g.roundId);
+  } else if(room.activeGame==='impostor' && g.stage==='vote'){
+    prefix = ansPrefix(roomCode, 'imp'+g.roundId); label = 'votaram';
+  }
+  if(!prefix) return;
+  const listRes = await storageList(prefix, true);
+  const newCount = listRes.keys.length;
+  if(newCount !== liveCount.answered){
+    liveCount = { answered:newCount, total };
+    const el = document.getElementById('live-count-text');
+    if(el) el.textContent = `${newCount}/${total} ${label}`;
+  }
+}
+
+/* ---------- render dispatcher ---------- */
+function render(){
+  renderHeaderChip();
+  renderInstallSlot();
+  const main = document.getElementById('main');
+  if(!roomCode){ main.innerHTML = homeScreen(); return; }
+  if(!room){ main.innerHTML = `<p class="hint">Carregando sala...</p>`; return; }
+  if(room.phase==='lobby'){ main.innerHTML = lobbyScreen(); return; }
+  if(room.phase==='menu'){ main.innerHTML = menuScreen(); return; }
+  if(room.phase==='scoreboard'){ main.innerHTML = scoreboardScreen(); return; }
+  if(room.phase==='game'){ main.innerHTML = gameScreen(); return; }
+}
+
+function renderHeaderChip(){
+  const el = document.getElementById('header-chip');
+  if(!roomCode || !room){ el.innerHTML=''; return; }
+  el.innerHTML = `<div class="ticket-chip"><span class="code">${room.code}</span><span class="count">${room.players.length} na sala</span></div>`;
+}
+function renderInstallSlot(){
+  const el = document.getElementById('install-slot');
+  el.innerHTML = deferredInstallPrompt ? `<button class="install-btn" onclick="installApp()">Instalar app</button>` : '';
+}
+
+/* ---------- home ---------- */
+function homeScreen(){
+  const mode = homeMode || 'create';
+  return `
+    ${!STORAGE_AVAILABLE ? `<div class="banner">⚠️ O Firebase ainda não foi configurado neste arquivo. Abra o <code>index.html</code>, cole a configuração do seu projeto Firebase logo no início do &lt;script&gt; e recarregue a página pra ativar o multiplayer.</div>` : ''}
+    <h1 class="title">Bora jogar?</h1>
+    <p class="sub">Crie uma sala ou entre com o código de alguém. Todo mundo joga junto, direto do próprio celular.</p>
+    <div class="tabs">
+      <div class="tab ${mode==='create'?'active':''}" onclick="setHomeMode('create')">Criar sala</div>
+      <div class="tab ${mode==='join'?'active':''}" onclick="setHomeMode('join')">Entrar em sala</div>
+    </div>
+    <div class="card">
+      ${mode==='create' ? `
+        <label class="field-label">Seu nome</label>
+        <input type="text" id="create-name" maxlength="20" placeholder="Como te chamam na festa?">
+        <button class="btn btn-primary" onclick="handleCreate()">Criar sala</button>
+      ` : `
+        <label class="field-label">Código da sala</label>
+        <input type="text" id="join-code" maxlength="4" placeholder="Ex: AB12" style="text-transform:uppercase; letter-spacing:.2em; text-align:center; font-family:'Space Grotesk',sans-serif; font-weight:600;">
+        <label class="field-label">Seu nome</label>
+        <input type="text" id="join-name" maxlength="20" placeholder="Como te chamam na festa?">
+        ${joinError ? `<div class="error-msg">${esc(joinError)}</div>` : ''}
+        <button class="btn btn-primary" onclick="handleJoin()">Entrar na sala</button>
+      `}
+    </div>
+    <div class="game-grid">
+      ${gamePreviewCard('🤔','Mais Provável','Vote em quem faria isso')}
+      ${gamePreviewCard('🕵️','Quem Sou Eu','Descubra sua identidade')}
+      ${gamePreviewCard('🤥','Duvido','Aposte e cronometre')}
+      ${gamePreviewCard('🎭','Impostor','Descubra quem não sabe a palavra')}
+      ${gamePreviewCard('📋','Top 10','Um lê, o resto joga e duvida')}
+      ${gamePreviewCard('💞','Quiz da Isabela','Quem conhece ela melhor?')}
+    </div>
+  `;
+}
+function gamePreviewCard(emoji,name,desc){
+  return `<div class="game-card" style="cursor:default;"><div class="badge">${emoji}</div><div class="gname">${name}</div><div class="gdesc">${desc}</div></div>`;
+}
+function setHomeMode(m){ homeMode=m; joinError=''; render(); }
+function handleCreate(){
+  const name = document.getElementById('create-name').value.trim();
+  if(!name){ alertInline('create-name'); return; }
+  createRoom(name);
+}
+function handleJoin(){
+  const code = document.getElementById('join-code').value.trim();
+  const name = document.getElementById('join-name').value.trim();
+  if(!code || !name){ joinError='Preencha o código e seu nome.'; render(); return; }
+  joinRoom(code, name);
+}
+function alertInline(id){
+  const el = document.getElementById(id);
+  el.style.borderColor = 'var(--danger)';
+  el.focus();
+}
+
+/* ---------- lobby ---------- */
+function lobbyScreen(){
+  const host = isHost();
+  return `
+    <h1 class="title">Sala ${room.code}</h1>
+    <p class="sub">Compartilhe o código <b>${room.code}</b> com a galera. Assim que todos entrarem, é só começar.</p>
+    <div class="card">
+      <label class="field-label">Quem já chegou (${room.players.length})</label>
+      <ul class="player-list">
+        ${room.players.map(p=>`<li><div class="avatar" style="background:${colorFor(p.id)}">${esc(initials(p.name))}</div>${esc(p.name)}${p.id===room.hostId?'<span class="crown">👑</span>':''}</li>`).join('')}
+      </ul>
+    </div>
+    ${host ? `
+      <button class="btn btn-primary" ${room.players.length<2?'disabled':''} onclick="goToMenu()">Começar a festa</button>
+      ${room.players.length<2 ? '<p class="hint">Precisa de pelo menos 2 pessoas na sala.</p>' : ''}
+    ` : `<p class="hint">Esperando o anfitrião(a) começar a festa...</p>`}
+    <div class="foot-actions">
+      <button class="btn btn-ghost btn-sm" onclick="leaveRoom()">Sair da sala</button>
+    </div>
+  `;
+}
+async function goToMenu(){ await updateRoom(r=>{ r.phase='menu'; r.activeGame=null; }); }
+
+/* ---------- menu ---------- */
+const GAMES = [
+  { id:'top', emoji:'🤔', name:'Mais Provável', desc:'Vote em quem faria isso' },
+  { id:'quemsou', emoji:'🕵️', name:'Quem Sou Eu', desc:'Descubra sua identidade' },
+  { id:'duvido', emoji:'🤥', name:'Duvido', desc:'Aposte e cronometre' },
+  { id:'impostor', emoji:'🎭', name:'Impostor', desc:'Descubra quem não sabe a palavra' },
+  { id:'top10', emoji:'📋', name:'Top 10', desc:'Um lê, o resto joga e duvida' },
+  { id:'quiz', emoji:'💞', name:'Quiz da Isabela', desc:'Quem conhece ela melhor?' },
+];
+function menuScreen(){
+  const host = isHost();
+  return `
+    <h1 class="title">Escolha o jogo</h1>
+    <p class="sub">${host ? 'Toque em um jogo para começar a rodada.' : 'Esperando o anfitrião(a) escolher o próximo jogo...'}</p>
+    <div class="game-grid mb">
+      ${GAMES.map(g=>`
+        <div class="game-card" ${host?`onclick="startGame('${g.id}')"`:'style="cursor:default; opacity:.85;"'}>
+          <div class="badge">${g.emoji}</div>
+          <div class="gname">${g.name}</div>
+          <div class="gdesc">${g.desc}</div>
+        </div>`).join('')}
+    </div>
+    <button class="btn btn-outline" onclick="goScoreboard()">Ver placar</button>
+    <div class="foot-actions">
+      <button class="btn btn-ghost btn-sm" onclick="leaveRoom()">Sair da sala</button>
+    </div>
+  `;
+}
+async function goScoreboard(){ await updateRoom(r=>{ r.phase='scoreboard'; }); }
+function scoreboardScreen(){
+  const sorted = [...room.players].sort((a,b)=>(b.score||0)-(a.score||0));
+  return `
+    <h1 class="title">Placar</h1>
+    <div class="card">
+      ${sorted.map((p,i)=>`
+        <div class="scoreboard-row">
+          <div class="rank">${i+1}º</div>
+          <div class="avatar" style="background:${colorFor(p.id)}">${esc(initials(p.name))}</div>
+          <div style="font-weight:600; font-size:.9rem;">${esc(p.name)}</div>
+          <div class="score-val">${p.score||0} pt${(p.score||0)===1?'':'s'}</div>
+        </div>`).join('')}
+    </div>
+    ${isHost() ? `<button class="btn btn-primary" onclick="goToMenu()">Voltar ao menu</button>` : `<p class="hint">Esperando o anfitrião(a)...</p>`}
+  `;
+}
+
+async function startGame(gameId){
+  clearDuvidoTicker();
+  formLocked = false; quemsouSubmitted=false; selectedVote=null;
+  duvidoDiffTab='facil'; duvidoCategoryDraft=null; duvidoCountDraft=5;
+  impostorVoted=false; selectedImpostorVote=null;
+  quizDraftQuestions=[];
+  await updateRoom(r=>{
+    r.phase='game';
+    r.activeGame=gameId;
+    if(gameId==='top'){
+      r.gameData = { roundId:1, order: shuffle([...Array(TOP.length).keys()]), idx:0, promptText: TOP[0], revealed:false, results:null };
+      r.gameData.promptText = TOP[r.gameData.order[0]];
+    } else if(gameId==='quemsou'){
+      r.gameData = { stage:'submit', assignments:null };
+    } else if(gameId==='duvido'){
+      r.gameData = { stage:'teams', teamA:[], teamB:[], timeLimit:60, turnTeam:'A', turnIdxA:0, turnIdxB:0,
+        currentPlayerId:null, category:null, difficulty:null, required:null, challengerId:null,
+        timerStartedAt:null, success:null, scoreA:0, scoreB:0 };
+    } else if(gameId==='impostor'){
+      r.gameData = { stage:'idle', roundId:0, majorityWord:null, impostorWord:null, clue:null, impostorId:null, results:null };
+    } else if(gameId==='top10'){
+      r.gameData = { stage:'idle', themeIndex:null, theme:null, answers:null, readerId:null };
+    } else if(gameId==='quiz'){
+      r.gameData = { stage:'setup', questions:[], currentIndex:0, revealed:false };
+    }
+  });
+}
+
+/* ---------- game dispatcher ---------- */
+function gameScreen(){
+  const g = room.activeGame;
+  let body = '';
+  if(g==='top') body = topScreen();
+  else if(g==='quemsou') body = quemsouScreen();
+  else if(g==='duvido') body = duvidoScreen();
+  else if(g==='impostor') body = impostorScreen();
+  else if(g==='top10') body = top10Screen();
+  else if(g==='quiz') body = quizScreen();
+  const meta = GAMES.find(x=>x.id===g);
+  return `
+    <div style="display:flex; align-items:center; gap:.55rem; margin-bottom:.3rem;">
+      <div class="badge" style="margin:0;">${meta.emoji}</div>
+      <h1 class="title" style="margin:0;">${meta.name}</h1>
+    </div>
+    ${body}
+    <div class="foot-actions">
+      ${isHost() ? `<button class="btn btn-ghost btn-sm" onclick="goToMenu()">← Trocar jogo</button>` : ''}
+      <button class="btn btn-ghost btn-sm" onclick="leaveRoom()">Sair</button>
+    </div>
+  `;
+}
+
+/* ---------- Mais Provável ---------- */
+function topScreen(){
+  const g = room.gameData;
+  let inner = `
+    <div class="prompt-box">
+      <div class="eyebrow">Quem é mais provável de...</div>
+      <div class="prompt-text">${esc(g.promptText)}</div>
+    </div>`;
+
+  if(!g.revealed){
+    inner += `<div class="chip-row mb">${room.players.map(p=>`
+      <div class="pick-chip ${selectedVote===p.id?'selected':''}" onclick="answerTop('${p.id}')">${esc(p.name)}</div>`).join('')}</div>`;
+    inner += `<div class="status-line" id="live-count-text">${liveCount.answered}/${room.players.length} responderam</div>`;
+    if(isHost()){
+      inner += `<button class="btn btn-primary" onclick="revealTopRound()">Revelar resultado</button>`;
+    } else {
+      inner += `<p class="hint">Esperando o anfitrião(a) revelar...</p>`;
+    }
+  } else {
+    const results = g.results || [];
+    const max = Math.max(1, ...results.map(x=>x.count));
+    inner += `<div class="card">` + results.map(x=>`
+      <div class="result-row">
+        <div style="flex:1;">
+          <div class="result-name">${esc(x.name)}</div>
+          <div class="bar" style="width:${Math.max(6,(x.count/max)*100)}%;"></div>
+        </div>
+        <div class="result-count">${x.count}</div>
+      </div>`).join('') + `</div>`;
+    if(isHost()){
+      inner += `<button class="btn btn-primary" onclick="nextTopRound()">Próxima</button>`;
+    } else {
+      inner += `<p class="hint">Esperando a próxima rodada...</p>`;
+    }
+  }
+  return inner;
+}
+async function answerTop(playerId){
+  selectedVote = playerId;
+  render();
+  await storageSet(ansKey(roomCode, room.gameData.roundId, me.id), playerId, true);
+}
+async function revealTopRound(){
+  const g = room.gameData;
+  const listRes = await storageList(ansPrefix(roomCode, g.roundId), true);
+  const keys = listRes.keys || [];
+  const counts = {};
+  for(const k of keys){
+    const v = await storageGet(k, true);
+    if(!v) continue;
+    counts[v.value] = (counts[v.value]||0)+1;
+  }
+  const results = room.players.map(p=>({name:p.name, count:counts[p.id]||0})).sort((a,b)=>b.count-a.count);
+  await updateRoom(r=>{ r.gameData.revealed=true; r.gameData.results=results; });
+  burstConfetti(24);
+}
+async function nextTopRound(){
+  selectedVote = null;
+  await updateRoom(r=>{
+    const g = r.gameData;
+    g.idx = (g.idx+1) % g.order.length;
+    g.roundId += 1;
+    g.promptText = TOP[g.order[g.idx]];
+    g.revealed = false;
+    g.results = null;
+  });
+  liveCount = {answered:0, total:room.players.length};
+}
+
+/* ---------- Quem Sou Eu ---------- */
+function quemsouScreen(){
+  const g = room.gameData;
+  if(g.stage==='submit'){
+    if(quemsouSubmitted){
+      formLocked = true;
+      return `
+        <div class="prompt-box">
+          <div class="eyebrow">Enviado!</div>
+          <div class="prompt-text">Aguardando o resto da galera</div>
+        </div>
+        <div class="status-line" id="qs-count-text">Carregando...</div>
+        ${isHost() ? `<button class="btn btn-primary" onclick="sortQuemSou()">Sortear identidades</button>` : ''}
+      `;
+    }
+    formLocked = true;
+    setTimeout(()=>document.getElementById('qs-input')?.focus(), 50);
+    return `
+      <p class="sub">Digite o nome de um personagem, famoso ou figura conhecida do grupo. Alguém vai "virar" essa pessoa sem saber!</p>
+      <input type="text" id="qs-input" maxlength="30" placeholder="Ex: Batman, Anitta, Vovó da família...">
+      <button class="btn btn-primary" onclick="submitQuemSou()">Enviar</button>
+    `;
+  }
+  if(g.stage==='play'){
+    const others = room.players.filter(p=>p.id!==me.id);
+    return `
+      <p class="sub">Sua identidade está escondida de você! Pergunte "sim ou não" pros amigos até descobrir quem você é.</p>
+      <div class="identity-card locked">
+        <div class="avatar" style="background:${colorFor(me.id)}">${esc(initials(me.name))}</div>
+        <div class="who">Você</div>
+        <div class="whois">? ? ?</div>
+      </div>
+      ${others.map(p=>`
+        <div class="identity-card">
+          <div class="avatar" style="background:${colorFor(p.id)}">${esc(initials(p.name))}</div>
+          <div class="who">${esc(p.name)}</div>
+          <div class="whois">${esc(g.assignments[p.id]||'—')}</div>
+        </div>`).join('')}
+      ${isHost() ? `<button class="btn btn-primary" onclick="revealQuemSou()">Encerrar e revelar tudo</button>` : `<p class="hint">Peça pro anfitrião(a) encerrar quando todo mundo já tiver adivinhado.</p>`}
+    `;
+  }
+  return `
+    <div class="card">
+      <label class="field-label">Quem era quem</label>
+      ${room.players.map(p=>`
+        <div class="identity-card">
+          <div class="avatar" style="background:${colorFor(p.id)}">${esc(initials(p.name))}</div>
+          <div class="who">${esc(p.name)}</div>
+          <div class="whois">${esc(g.assignments[p.id]||'—')}</div>
+        </div>`).join('')}
+    </div>
+  `;
+}
+async function submitQuemSou(){
+  const val = document.getElementById('qs-input').value.trim();
+  if(!val) return;
+  await storageSet(qsKey(roomCode, me.id), val, true);
+  quemsouSubmitted = true;
+  formLocked = false;
+  render();
+  pollQsCount();
+}
+async function pollQsCount(){
+  if(!room || room.gameData.stage!=='submit') return;
+  const listRes = await storageList(qsPrefix(roomCode), true);
+  const el = document.getElementById('qs-count-text');
+  if(el) el.textContent = `${listRes.keys.length}/${room.players.length} enviaram`;
+}
+async function sortQuemSou(){
+  const listRes = await storageList(qsPrefix(roomCode), true);
+  const subs = [];
+  for(const k of listRes.keys){
+    const v = await storageGet(k, true);
+    const pid = k.split(':').pop();
+    if(v && room.players.find(p=>p.id===pid)) subs.push({id:pid, name:v.value});
+  }
+  if(subs.length < 2){ alert('Precisa de pelo menos 2 pessoas enviando um nome.'); return; }
+  const ids = subs.map(s=>s.id);
+  let shuffled;
+  let tries=0;
+  do{ shuffled = shuffle(ids); tries++; } while(shuffled.some((id,i)=>id===ids[i]) && tries<60);
+  for(let i=0;i<ids.length;i++){
+    if(shuffled[i]===ids[i]){
+      const j=(i+1)%ids.length;
+      [shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];
+    }
+  }
+  const assignments = {};
+  ids.forEach((id,i)=>{ assignments[id] = subs.find(s=>s.id===shuffled[i]).name; });
+  formLocked = false;
+  await updateRoom(r=>{ r.gameData.stage='play'; r.gameData.assignments=assignments; });
+  burstConfetti(22);
+}
+async function revealQuemSou(){
+  formLocked = false;
+  await updateRoom(r=>{ r.gameData.stage='reveal'; });
+  burstConfetti(28);
+}
+function updateFormStatus(){
+  if(room.activeGame==='quemsou') pollQsCount();
+}
+
+/* ---------- Duvido (aposte quantos itens a pessoa fala) ---------- */
+function teamOf(pid){
+  const g = room.gameData;
+  if(g.teamA && g.teamA.includes(pid)) return 'A';
+  if(g.teamB && g.teamB.includes(pid)) return 'B';
+  return null;
+}
+function duvidoScoreHeader(){
+  const g = room.gameData;
+  return `<div class="team-score-row"><span>Time 1: ${g.scoreA}</span><span class="vs">vs</span><span>Time 2: ${g.scoreB}</span></div>`;
+}
+function duvidoScreen(){
+  const g = room.gameData;
+  if(g.stage==='teams') return duvidoTeamsScreen();
+  if(g.stage==='challenge') return duvidoChallengeScreen();
+  if(g.stage==='result') return duvidoResultScreen();
+  return '';
+}
+function duvidoTeamsScreen(){
+  const g = room.gameData;
+  const host = isHost();
+  return `
+    <p class="sub">Monte dois times. Toque no nome pra alternar: sem time → Time 1 → Time 2 → sem time.</p>
+    <div class="chip-row mb">
+      ${room.players.map(p=>{
+        const cls = g.teamA.includes(p.id) ? 'teamA' : g.teamB.includes(p.id) ? 'teamB' : '';
+        return `<div class="pick-chip ${cls}" ${host?`onclick="cycleDuvidoTeam('${p.id}')"`:''}>${esc(p.name)}</div>`;
+      }).join('')}
+    </div>
+    <div class="team-col"><h4>Time 1 (${g.teamA.length})</h4>${g.teamA.map(id=>esc((room.players.find(p=>p.id===id)||{}).name||'')).join(', ') || 'vazio'}</div>
+    <div class="team-col"><h4>Time 2 (${g.teamB.length})</h4>${g.teamB.map(id=>esc((room.players.find(p=>p.id===id)||{}).name||'')).join(', ') || 'vazio'}</div>
+    <label class="field-label">Tempo por rodada</label>
+    <div class="chip-row mb">
+      <div class="pick-chip ${g.timeLimit===30?'selected':''}" ${host?`onclick="setDuvidoTime(30)"`:''}>30 segundos</div>
+      <div class="pick-chip ${g.timeLimit===60?'selected':''}" ${host?`onclick="setDuvidoTime(60)"`:''}>60 segundos</div>
+    </div>
+    ${host ? `<button class="btn btn-primary" ${(g.teamA.length<1||g.teamB.length<1)?'disabled':''} onclick="startDuvidoBattle()">Começar Duvido</button>` : `<p class="hint">Esperando o anfitrião(a) montar os times...</p>`}
+  `;
+}
+async function cycleDuvidoTeam(pid){
+  await updateRoom(r=>{
+    const g = r.gameData;
+    if(g.teamA.includes(pid)){ g.teamA = g.teamA.filter(x=>x!==pid); g.teamB.push(pid); }
+    else if(g.teamB.includes(pid)){ g.teamB = g.teamB.filter(x=>x!==pid); }
+    else { g.teamA.push(pid); }
+  });
+}
+async function setDuvidoTime(t){ await updateRoom(r=>{ r.gameData.timeLimit=t; }); }
+async function startDuvidoBattle(){
+  clearDuvidoTicker();
+  duvidoCountDraft = 5; duvidoCategoryDraft = null;
+  await updateRoom(r=>{
+    const g = r.gameData;
+    g.stage='challenge';
+    g.turnTeam='A';
+    g.turnIdxA=0; g.turnIdxB=0;
+    g.currentPlayerId=g.teamA[0];
+    g.category=null; g.difficulty=null; g.required=null; g.challengerId=null;
+    g.timerStartedAt=null; g.success=null;
+    g.scoreA=0; g.scoreB=0;
+  });
+}
+function duvidoChallengeScreen(){
+  const g = room.gameData;
+  const targetTeam = teamOf(g.currentPlayerId);
+  const targetName = (room.players.find(p=>p.id===g.currentPlayerId)||{}).name || '???';
+  const myTeam = teamOf(me.id);
+  let inner = duvidoScoreHeader();
+  inner += `<div class="prompt-box"><div class="eyebrow">Na roda</div><div class="prompt-text">${esc(targetName)} (Time ${targetTeam==='A'?'1':'2'})</div></div>`;
+
+  if(g.category===null){
+    clearDuvidoTicker();
+    if(myTeam && myTeam!==targetTeam){
+      inner += `
+        <p class="sub">Prepare o desafio pro time adversário! Escolham a categoria e decidam entre vocês quantos itens ${esc(targetName)} precisa dizer em ${g.timeLimit}s — essa escolha é só do seu time.</p>
+        <div class="tabs">
+          <div class="tab ${duvidoDiffTab==='facil'?'active':''}" onclick="setDuvidoDiffTab('facil')">Fácil</div>
+          <div class="tab ${duvidoDiffTab==='media'?'active':''}" onclick="setDuvidoDiffTab('media')">Média</div>
+          <div class="tab ${duvidoDiffTab==='dificil'?'active':''}" onclick="setDuvidoDiffTab('dificil')">Difícil</div>
+        </div>
+        <div class="chip-row mb">${CATEGORIES[duvidoDiffTab].map(c=>`<div class="pick-chip ${duvidoCategoryDraft===c?'selected':''}" onclick="pickDuvidoCategoryDraft('${c.replace(/'/g,"\\'")}')">${esc(c)}</div>`).join('')}</div>
+        <label class="field-label">Quantos itens ${esc(targetName)} precisa dizer?</label>
+        <div class="stepper">
+          <button onclick="adjustDuvidoCount(-1)">−</button>
+          <div class="req-num">${duvidoCountDraft}</div>
+          <button onclick="adjustDuvidoCount(1)">+</button>
+        </div>
+        <button class="btn btn-primary" ${duvidoCategoryDraft?'':'disabled'} onclick="confirmDuvidoChallenge()">Desafiar!</button>
+      `;
+    } else {
+      inner += `<p class="hint">O time adversário está preparando o desafio...</p>`;
+    }
+  } else if(!g.timerStartedAt){
+    clearDuvidoTicker();
+    inner += `
+      <div class="card">
+        <label class="field-label">Categoria</label>
+        <p style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1.05rem; margin:.2rem 0 .8rem;">${esc(g.category)}</p>
+        <label class="field-label">Precisa dizer</label>
+        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.35rem; margin:.2rem 0;">${g.required} itens em ${g.timeLimit}s</p>
+      </div>`;
+    if(isHost()){
+      inner += `<button class="btn btn-primary" onclick="startDuvidoTimer()">Começar cronômetro</button>`;
+    } else {
+      inner += `<p class="hint">Esperando o anfitrião(a) começar o cronômetro...</p>`;
+    }
+  } else {
+    const remaining = Math.max(0, g.timeLimit - Math.floor((Date.now()-g.timerStartedAt)/1000));
+    if(remaining > 0){
+      ensureDuvidoTicker();
+      inner += `
+        <div class="card">
+          <label class="field-label">Categoria</label>
+          <p style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1.05rem; margin:.2rem 0;">${esc(g.category)} — ${g.required} itens</p>
+        </div>
+        <div class="timer-num">${remaining}s</div>
+        <p class="hint">${esc(targetName)}, fale em voz alta!</p>
+      `;
+    } else {
+      clearDuvidoTicker();
+      inner += `
+        <div class="prompt-box"><div class="eyebrow">Tempo esgotado</div><div class="prompt-text">${esc(g.category)} — ${g.required} itens</div></div>
+      `;
+      if(isHost()){
+        inner += `
+          <div class="btn-row">
+            <button class="btn btn-success" onclick="markDuvidoResult(true)">Conseguiu</button>
+            <button class="btn btn-danger" onclick="markDuvidoResult(false)">Não conseguiu</button>
+          </div>`;
+      } else {
+        inner += `<p class="hint">Esperando o anfitrião(a) marcar o resultado...</p>`;
+      }
+    }
+  }
+  return inner;
+}
+function setDuvidoDiffTab(t){ duvidoDiffTab=t; duvidoCategoryDraft=null; render(); }
+function pickDuvidoCategoryDraft(cat){ duvidoCategoryDraft=cat; render(); }
+function adjustDuvidoCount(delta){ duvidoCountDraft = Math.max(1, duvidoCountDraft+delta); render(); }
+async function confirmDuvidoChallenge(){
+  if(!duvidoCategoryDraft) return;
+  await updateRoom(r=>{
+    r.gameData.category=duvidoCategoryDraft;
+    r.gameData.difficulty=duvidoDiffTab;
+    r.gameData.required=duvidoCountDraft;
+    r.gameData.challengerId=me.id;
+    r.gameData.timerStartedAt=null;
+  });
+}
+async function startDuvidoTimer(){
+  await updateRoom(r=>{ r.gameData.timerStartedAt = Date.now(); });
+}
+async function markDuvidoResult(success){
+  clearDuvidoTicker();
+  await updateRoom(r=>{
+    const g = r.gameData;
+    g.stage='result';
+    g.success=success;
+    const targetTeam = (g.teamA.includes(g.currentPlayerId)) ? 'A' : 'B';
+    if(success){
+      if(targetTeam==='A') g.scoreA += 1; else g.scoreB += 1;
+      const pl = r.players.find(p=>p.id===g.currentPlayerId);
+      if(pl) pl.score = (pl.score||0)+1;
+    } else {
+      const challengerTeam = targetTeam==='A' ? 'B' : 'A';
+      if(challengerTeam==='A') g.scoreA += 1; else g.scoreB += 1;
+      const ch = r.players.find(p=>p.id===g.challengerId);
+      if(ch) ch.score = (ch.score||0)+1;
+    }
+  });
+  burstConfetti(success ? 24 : 10);
+}
+function duvidoResultScreen(){
+  const g = room.gameData;
+  const targetName = (room.players.find(p=>p.id===g.currentPlayerId)||{}).name || '???';
+  let inner = duvidoScoreHeader();
+  inner += `
+    <div class="card center">
+      <div style="font-size:2.2rem;">${g.success?'✅':'❌'}</div>
+      <p style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1.1rem; margin:.5rem 0 0;">
+        ${esc(targetName)} ${g.success?'conseguiu':'não conseguiu'} dizer ${g.required} itens de "${esc(g.category)}"!
+      </p>
+    </div>
+  `;
+  if(isHost()) inner += `<button class="btn btn-primary" onclick="nextDuvidoTurn()">Próxima rodada</button>`;
+  else inner += `<p class="hint">Esperando a próxima rodada...</p>`;
+  return inner;
+}
+async function nextDuvidoTurn(){
+  clearDuvidoTicker();
+  duvidoCountDraft = 5; duvidoCategoryDraft = null;
+  await updateRoom(r=>{
+    const g = r.gameData;
+    if(g.turnTeam==='A'){ g.turnIdxA = (g.turnIdxA+1) % g.teamA.length; }
+    else { g.turnIdxB = (g.turnIdxB+1) % g.teamB.length; }
+    g.turnTeam = g.turnTeam==='A' ? 'B' : 'A';
+    const arr = g.turnTeam==='A' ? g.teamA : g.teamB;
+    const idx = g.turnTeam==='A' ? g.turnIdxA : g.turnIdxB;
+    g.currentPlayerId = arr[idx];
+    g.category=null; g.difficulty=null; g.required=null; g.challengerId=null;
+    g.timerStartedAt=null; g.success=null;
+    g.stage='challenge';
+  });
+}
+
+/* ---------- Impostor ---------- */
+function impostorScreen(){
+  const g = room.gameData;
+  if(g.stage==='idle'){
+    return `
+      <p class="sub">Todo mundo recebe a mesma palavra secreta — só uma pessoa (o impostor) recebe outra palavra parecida, com uma dica de socorro. Dêem pistas em voz alta sem falar a palavra e descubram quem é o impostor!</p>
+      ${isHost() ? `<button class="btn btn-primary" onclick="startImpostorRound()">Sortear e começar</button>` : `<p class="hint">Esperando o anfitrião(a) começar...</p>`}
+    `;
+  }
+  if(g.stage==='reveal'){
+    const amImpostor = me.id===g.impostorId;
+    return `
+      <div class="card ${amImpostor?'impostor-card red':''} center">
+        ${amImpostor ? `
+          <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.15rem; color:#FF9B9B; margin:.2rem 0 .5rem;">Você é o IMPOSTOR</p>
+          <p class="hint" style="font-style:italic;">Sua categoria é: ${esc(g.clue)}. Use isso pra bolar pistas que combinem, sem chutar a palavra certa dos outros.</p>
+        ` : `
+          <p class="hint" style="margin-bottom:.3rem;">Sua palavra secreta é</p>
+          <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.4rem;">${esc(g.majorityWord)}</p>
+        `}
+      </div>
+      <p class="hint mb">Dê pistas sobre sua palavra sem falar ela. Quem não souber a palavra certa pode estar disfarçando!</p>
+      ${isHost() ? `<button class="btn btn-primary" onclick="openImpostorDiscuss()">Abrir discussão</button>` : `<p class="hint">Esperando o anfitrião(a)...</p>`}
+    `;
+  }
+  if(g.stage==='discuss'){
+    return `
+      <div class="prompt-box">
+        <div class="eyebrow">Discussão</div>
+        <div class="prompt-text">Cada um dá uma dica sobre a palavra. Sem falar ela!</div>
+      </div>
+      ${isHost() ? `<button class="btn btn-primary" onclick="openImpostorVote()">Abrir votação</button>` : `<p class="hint">Esperando o anfitrião(a) abrir a votação...</p>`}
+    `;
+  }
+  if(g.stage==='vote'){
+    if(impostorVoted){
+      return `
+        <div class="prompt-box"><div class="eyebrow">Voto registrado</div><div class="prompt-text">Esperando o resto da galera votar</div></div>
+        <div class="status-line" id="live-count-text">${liveCount.answered}/${liveCount.total} votaram</div>
+        ${isHost() ? `<button class="btn btn-primary" onclick="revealImpostor()">Revelar resultado</button>` : ''}
+      `;
+    }
+    return `
+      <p class="sub">Quem você acha que é o impostor?</p>
+      <div class="chip-row mb">${room.players.filter(p=>p.id!==me.id).map(p=>`<div class="pick-chip" onclick="voteImpostor('${p.id}')">${esc(p.name)}</div>`).join('')}</div>
+    `;
+  }
+  const res = g.results || {list:[], crewWon:false};
+  const max = Math.max(1, ...res.list.map(x=>x.count));
+  return `
+    <div class="card">
+      ${res.list.map(x=>`
+        <div class="result-row">
+          <div style="flex:1;">
+            <div class="result-name">${esc(x.name)}${x.id===g.impostorId?' 🎭':''}</div>
+            <div class="bar" style="width:${Math.max(6,(x.count/max)*100)}%;"></div>
+          </div>
+          <div class="result-count">${x.count}</div>
+        </div>`).join('')}
+    </div>
+    <div class="prompt-box">
+      <div class="eyebrow">${res.crewWon ? 'A galera venceu!' : 'O impostor escapou!'}</div>
+      <div class="prompt-text" style="font-size:1rem;">Palavra: ${esc(g.majorityWord)} · Impostor tinha: ${esc(g.impostorWord)}</div>
+    </div>
+    ${isHost() ? `<button class="btn btn-primary" onclick="startImpostorRound()">Nova rodada</button>` : `<p class="hint">Esperando a próxima rodada...</p>`}
+  `;
+}
+async function startImpostorRound(){
+  const pair = IMPOSTOR_PAIRS[Math.floor(Math.random()*IMPOSTOR_PAIRS.length)];
+  const impostorPlayer = room.players[Math.floor(Math.random()*room.players.length)];
+  impostorVoted = false; selectedImpostorVote = null;
+  await updateRoom(r=>{
+    const prevRound = (r.gameData && r.gameData.roundId) || 0;
+    r.gameData = { stage:'reveal', roundId: prevRound+1, majorityWord: pair[0], impostorWord: pair[1], clue: pair[2], impostorId: impostorPlayer.id, results:null };
+  });
+}
+async function openImpostorDiscuss(){ await updateRoom(r=>{ r.gameData.stage='discuss'; }); }
+async function openImpostorVote(){
+  impostorVoted = false; selectedImpostorVote = null;
+  liveCount = { answered:0, total: room.players.length };
+  await updateRoom(r=>{ r.gameData.stage='vote'; });
+}
+async function voteImpostor(pid){
+  impostorVoted = true; selectedImpostorVote = pid; render();
+  await storageSet(ansKey(roomCode, 'imp'+room.gameData.roundId, me.id), pid, true);
+}
+async function revealImpostor(){
+  const g = room.gameData;
+  const listRes = await storageList(ansPrefix(roomCode, 'imp'+g.roundId), true);
+  const counts = {};
+  for(const k of listRes.keys){
+    const v = await storageGet(k, true);
+    if(!v) continue;
+    counts[v.value] = (counts[v.value]||0)+1;
+  }
+  const results = room.players.map(p=>({id:p.id, name:p.name, count:counts[p.id]||0})).sort((a,b)=>b.count-a.count);
+  const topVoted = results[0];
+  const crewWon = !!(topVoted && topVoted.count>0 && topVoted.id===g.impostorId);
+  await updateRoom(r=>{
+    r.gameData.stage='result';
+    r.gameData.results={list:results, crewWon};
+    if(crewWon){
+      r.players.forEach(p=>{ if(p.id!==r.gameData.impostorId) p.score=(p.score||0)+1; });
+    } else {
+      const imp = r.players.find(p=>p.id===r.gameData.impostorId);
+      if(imp) imp.score=(imp.score||0)+2;
+    }
+  });
+  burstConfetti(26);
+}
+
+/* ---------- Top 10 ---------- */
+function top10Screen(){
+  const g = room.gameData;
+  const isReader = me.id===g.readerId;
+  if(g.stage==='idle'){
+    return `
+      <p class="sub">O app sorteia um tema e escolhe quem vai ler. Só quem lê enxerga a lista das 10 respostas certas — o resto joga de cabeça, falando itens em voz alta. Se alguém duvidar de uma resposta, quem está lendo confere na hora.</p>
+      ${isHost() ? `<button class="btn btn-primary" onclick="startTop10Round()">Sortear tema e leitor</button>` : `<p class="hint">Esperando o anfitrião(a) começar...</p>`}
+    `;
+  }
+  if(g.stage==='active' || g.stage==='revealed'){
+    const readerName = (room.players.find(p=>p.id===g.readerId)||{}).name || '???';
+    let inner = '';
+    if(g.stage==='revealed'){
+      inner += `
+        <div class="prompt-box"><div class="eyebrow">Tema</div><div class="prompt-text">${esc(g.theme)}</div></div>
+        <div class="card">
+          <label class="field-label">As 10 respostas</label>
+          <ol style="margin:.4rem 0 0; padding-left:1.2rem; line-height:1.9;">
+            ${g.answers.map(a=>`<li>${esc(a)}</li>`).join('')}
+          </ol>
+        </div>
+      `;
+    } else if(isReader){
+      inner += `
+        <div class="card">
+          <label class="field-label">Só você vê isso — leitor(a) da rodada</label>
+          <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.1rem; margin:.3rem 0 .8rem;">${esc(g.theme)}</p>
+          <ol style="margin:0; padding-left:1.2rem; line-height:1.9;">
+            ${g.answers.map(a=>`<li>${esc(a)}</li>`).join('')}
+          </ol>
+        </div>
+        <p class="hint">Não fale as respostas! Só confira quando alguém for desafiado com "duvido!".</p>
+      `;
+    } else {
+      inner += `
+        <div class="prompt-box">
+          <div class="eyebrow">Tema de hoje</div>
+          <div class="prompt-text">${esc(g.theme)}</div>
+        </div>
+        <p class="hint">Falem itens em voz alta! Se acharem que alguém errou, gritem "Duvido!" — ${esc(readerName)} confere na lista.</p>
+      `;
+    }
+    if(isHost()){
+      inner += `<div class="btn-row" style="margin-top:.6rem;">`;
+      if(g.stage!=='revealed') inner += `<button class="btn btn-outline" onclick="revealTop10()">Mostrar lista</button>`;
+      inner += `<button class="btn btn-primary" onclick="startTop10Round()">Nova rodada</button>`;
+      inner += `</div>`;
+    }
+    return inner;
+  }
+  return '';
+}
+async function startTop10Round(){
+  const idx = Math.floor(Math.random()*TOP10_THEMES.length);
+  const pick = TOP10_THEMES[idx];
+  const reader = room.players[Math.floor(Math.random()*room.players.length)];
+  await updateRoom(r=>{
+    r.gameData = { stage:'active', themeIndex:idx, theme:pick.theme, answers:pick.answers, readerId:reader.id };
+  });
+}
+async function revealTop10(){
+  await updateRoom(r=>{ r.gameData.stage='revealed'; });
+  burstConfetti(16);
+}
+
+/* ---------- Quiz da Isabela ---------- */
+function quizScreen(){
+  const g = room.gameData;
+  if(g.stage==='setup') return quizSetupScreen();
+  if(g.stage==='play') return quizPlayScreen();
+  return '';
+}
+function quizSetupScreen(){
+  if(!isHost()){
+    return `<p class="sub">A pessoa que sabe as respostas certas está montando o quiz sobre a Isabela. Só um instante...</p>`;
+  }
+  const addedTexts = quizDraftQuestions.map(x=>x.q);
+  const remaining = QUIZ_SUGGESTIONS.filter(q=>!addedTexts.includes(q));
+  return `
+    <p class="sub">Monte o quiz sobre a Isabela. Toque numa sugestão pra adicionar (ou escreva a sua) e preencha a resposta certa de cada uma.</p>
+    ${remaining.length ? `
+      <label class="field-label">Sugestões de pergunta</label>
+      <div class="chip-row mb">${remaining.map(q=>`<div class="pick-chip" onclick="addQuizSuggestion('${q.replace(/'/g,"\\'")}')">${esc(q)}</div>`).join('')}</div>
+    ` : ''}
+    <label class="field-label">Sua pergunta</label>
+    <input type="text" id="quiz-custom-q" maxlength="140" placeholder="Escreva uma pergunta sobre a Isabela...">
+    <button class="btn btn-outline" onclick="addQuizCustom()">Adicionar pergunta</button>
+    ${quizDraftQuestions.length ? `
+      <label class="field-label" style="margin-top:1rem;">Perguntas do quiz (${quizDraftQuestions.length})</label>
+      ${quizDraftQuestions.map((item,i)=>`
+        <div class="card" style="margin-bottom:.6rem;">
+          <p style="font-weight:600; font-size:.9rem; margin:0 0 .55rem;">${i+1}. ${esc(item.q)}</p>
+          <input type="text" placeholder="Resposta certa" value="${esc(item.a)}" oninput="updateQuizAnswer(${i}, this.value)">
+          <button class="btn btn-ghost btn-sm" onclick="removeQuizQuestion(${i})">Remover</button>
+        </div>
+      `).join('')}
+    ` : ''}
+    <button class="btn btn-primary" ${quizDraftQuestions.length<1?'disabled':''} onclick="startQuizPlay()">Começar quiz</button>
+  `;
+}
+function addQuizSuggestion(q){
+  if(!quizDraftQuestions.find(x=>x.q===q)) quizDraftQuestions.push({q, a:''});
+  render();
+}
+function addQuizCustom(){
+  const el = document.getElementById('quiz-custom-q');
+  const val = el.value.trim();
+  if(!val) return;
+  quizDraftQuestions.push({q:val, a:''});
+  render();
+}
+function updateQuizAnswer(i, val){ if(quizDraftQuestions[i]) quizDraftQuestions[i].a = val; }
+function removeQuizQuestion(i){ quizDraftQuestions.splice(i,1); render(); }
+async function startQuizPlay(){
+  const filled = quizDraftQuestions.every(q=>q.a && q.a.trim());
+  if(!filled){ alert('Preencha a resposta certa de todas as perguntas antes de começar.'); return; }
+  const questions = quizDraftQuestions.map(q=>({q:q.q, a:q.a.trim()}));
+  await updateRoom(r=>{ r.gameData = { stage:'play', questions, currentIndex:0, revealed:false }; });
+}
+function quizPlayScreen(){
+  const g = room.gameData;
+  const item = g.questions[g.currentIndex];
+  let inner = `<div class="status-line">Pergunta ${g.currentIndex+1} de ${g.questions.length}</div>`;
+  inner += `<div class="prompt-box"><div class="eyebrow">Quem conhece mais a Isabela?</div><div class="prompt-text">${esc(item.q)}</div></div>`;
+  if(!g.revealed){
+    inner += `<p class="hint mb">Gritem os palpites! Quando todo mundo já chutou, o anfitrião revela a resposta certa.</p>`;
+    if(isHost()) inner += `<button class="btn btn-primary" onclick="revealQuizAnswer()">Revelar resposta</button>`;
+    else inner += `<p class="hint">Esperando o anfitrião(a) revelar...</p>`;
+  } else {
+    inner += `<div class="card center"><label class="field-label">Resposta certa</label><p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.15rem; margin:.3rem 0 0;">${esc(item.a)}</p></div>`;
+    if(isHost()){
+      inner += `<p class="hint mb">Quem acertou? Toque nos nomes pra dar ponto.</p>`;
+      inner += `<div class="chip-row mb">${room.players.map(p=>`<div class="pick-chip" onclick="awardQuizPoint('${p.id}')">${esc(p.name)}</div>`).join('')}</div>`;
+      inner += (g.currentIndex+1 < g.questions.length)
+        ? `<button class="btn btn-primary" onclick="nextQuizQuestion()">Próxima pergunta</button>`
+        : `<button class="btn btn-primary" onclick="finishQuiz()">Ver placar final</button>`;
+    } else {
+      inner += `<p class="hint">Esperando a próxima pergunta...</p>`;
+    }
+  }
+  return inner;
+}
+async function revealQuizAnswer(){ await updateRoom(r=>{ r.gameData.revealed=true; }); burstConfetti(18); }
+async function awardQuizPoint(pid){
+  await updateRoom(r=>{ const pl = r.players.find(p=>p.id===pid); if(pl) pl.score=(pl.score||0)+1; });
+  burstConfetti(10);
+}
+async function nextQuizQuestion(){
+  await updateRoom(r=>{ r.gameData.currentIndex += 1; r.gameData.revealed=false; });
+}
+async function finishQuiz(){ await updateRoom(r=>{ r.phase='scoreboard'; }); }
+
+/* ---------- init ---------- */
+render();
+</script>
+</body>
+</html>
