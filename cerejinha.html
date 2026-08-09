@@ -404,51 +404,92 @@ function randomDuvidoCategory(){
 }
 
 const CHARACTER_BANK = [
-  // pop
+  // Pop Culture, Cinema, TV & Music (Nacional e Internacional)
   { name: "Michael Jackson", cat: "pop" }, { name: "Anitta", cat: "pop" }, { name: "Shrek", cat: "pop" },
   { name: "Freddie Mercury", cat: "pop" }, { name: "Bob Esponja", cat: "pop" }, { name: "Elvis Presley", cat: "pop" },
   { name: "Barbie", cat: "pop" }, { name: "Simba", cat: "pop" }, { name: "Shakira", cat: "pop" },
   { name: "Beyoncé", cat: "pop" }, { name: "Wandinha Addams", cat: "pop" }, { name: "Madonna", cat: "pop" },
   { name: "Taylor Swift", cat: "pop" }, { name: "Lady Gaga", cat: "pop" }, { name: "Mickey Mouse", cat: "pop" },
   { name: "Woody (Toy Story)", cat: "pop" }, { name: "Branca de Neve", cat: "pop" }, { name: "Elsa (Frozen)", cat: "pop" },
+  { name: "Rihanna", cat: "pop" }, { name: "Justin Bieber", cat: "pop" }, { name: "Will Smith", cat: "pop" },
+  { name: "Tom Cruise", cat: "pop" }, { name: "Leonardo DiCaprio", cat: "pop" }, { name: "Keanu Reeves", cat: "pop" },
+  { name: "Zendaya", cat: "pop" }, { name: "Billie Eilish", cat: "pop" }, { name: "Snoop Dogg", cat: "pop" },
+  { name: "Eminem", cat: "pop" }, { name: "Britney Spears", cat: "pop" }, { name: "Katy Perry", cat: "pop" },
+  { name: "The Rock (Dwayne Johnson)", cat: "pop" }, { name: "Johnny Depp", cat: "pop" }, { name: "Brad Pitt", cat: "pop" },
 
-  // esportes
+  // Esportes (Brasil e Mundo)
   { name: "Pelé", cat: "esportes" }, { name: "Cristiano Ronaldo", cat: "esportes" }, { name: "Neymar", cat: "esportes" },
   { name: "Lionel Messi", cat: "esportes" }, { name: "Ayrton Senna", cat: "esportes" }, { name: "Michael Jordan", cat: "esportes" },
   { name: "Usain Bolt", cat: "esportes" }, { name: "Marta (Futebol)", cat: "esportes" }, { name: "LeBron James", cat: "esportes" },
   { name: "Ronaldo Fenômeno", cat: "esportes" }, { name: "Serena Williams", cat: "esportes" }, { name: "Gabriel Medina", cat: "esportes" },
+  { name: "Rebeca Andrade", cat: "esportes" }, { name: "Guga Kuerten", cat: "esportes" }, { name: "Ronaldinho Gaúcho", cat: "esportes" },
+  { name: "Zico", cat: "esportes" }, { name: "Lewis Hamilton", cat: "esportes" }, { name: "Mike Tyson", cat: "esportes" },
+  { name: "Muhammad Ali", cat: "esportes" }, { name: "Roger Federer", cat: "esportes" }, { name: "Rafael Nadal", cat: "esportes" },
+  { name: "Kobe Bryant", cat: "esportes" }, { name: "Rayssa Leal", cat: "esportes" }, { name: "Anderson Silva", cat: "esportes" },
 
-  // brasil
+  // Famosos, Apresentadores, Celebridades e História do Brasil
   { name: "Silvio Santos", cat: "brasil" }, { name: "Xuxa", cat: "brasil" }, { name: "Ivete Sangalo", cat: "brasil" },
   { name: "Luan Santana", cat: "brasil" }, { name: "Chico Bento", cat: "brasil" }, { name: "Emília (Sítio)", cat: "brasil" },
   { name: "Seu Madruga", cat: "brasil" }, { name: "Dona Florinda", cat: "brasil" }, { name: "Chapolin Colorado", cat: "brasil" },
   { name: "Faustão", cat: "brasil" }, { name: "Paulo Gustavo", cat: "brasil" }, { name: "Carmen Miranda", cat: "brasil" },
+  { name: "Dom Pedro II", cat: "brasil" }, { name: "Santos Dumont", cat: "brasil" }, { name: "Machado de Assis", cat: "brasil" },
+  { name: "Hebe Camargo", cat: "brasil" }, { name: "Didi (Renato Aragão)", cat: "brasil" }, { name: "Whindersson Nunes", cat: "brasil" },
+  { name: "Casimiro (Cazé)", cat: "brasil" }, { name: "Gilberto Gil", cat: "brasil" }, { name: "Caetano Veloso", cat: "brasil" },
+  { name: "Gal Costa", cat: "brasil" }, { name: "Roberto Carlos", cat: "brasil" }, { name: "Zeca Pagodinho", cat: "brasil" },
+  { name: "Sabrina Sato", cat: "brasil" }, { name: "Tatá Werneck", cat: "brasil" }, { name: "Ana Maria Braga", cat: "brasil" },
+  { name: "Rita Lee", cat: "brasil" }, { name: "Juliette", cat: "brasil" }, { name: "Chaves", cat: "brasil" },
 
-  // geek
+  // Geek, Super-heróis, Animes, Games e Desenhos
   { name: "Batman", cat: "geek" }, { name: "Homer Simpson", cat: "geek" }, { name: "Harry Potter", cat: "geek" },
   { name: "Mulher-Maravilha", cat: "geek" }, { name: "Darth Vader", cat: "geek" }, { name: "Hulk", cat: "geek" },
   { name: "Homem-Aranha", cat: "geek" }, { name: "Pikachu", cat: "geek" }, { name: "Yoda", cat: "geek" },
   { name: "Homem de Ferro", cat: "geek" }, { name: "Coringa", cat: "geek" }, { name: "Mario Bros", cat: "geek" },
   { name: "Goku", cat: "geek" }, { name: "Naruto", cat: "geek" }, { name: "Gandalf", cat: "geek" },
   { name: "Jack Sparrow", cat: "geek" }, { name: "Kratos", cat: "geek" }, { name: "Sonic", cat: "geek" },
+  { name: "Lara Croft", cat: "geek" }, { name: "Link (Zelda)", cat: "geek" }, { name: "Luffy (One Piece)", cat: "geek" },
+  { name: "Wolverine", cat: "geek" }, { name: "Capitão América", cat: "geek" }, { name: "Thor", cat: "geek" },
+  { name: "Thanos", cat: "geek" }, { name: "Deadpool", cat: "geek" }, { name: "Pantera Negra", cat: "geek" },
+  { name: "Dumbledore", cat: "geek" }, { name: "Buzz Lightyear", cat: "geek" }, { name: "Scooby-Doo", cat: "geek" },
+  { name: "Pica-Pau", cat: "geek" }, { name: "Pernalonga", cat: "geek" },
 
-  // conhecimentos / variados
+  // Figuras Históricas, Ciência, Arte e Conhecimentos Gerais
   { name: "Cleópatra", cat: "conhecimentos" }, { name: "Napoleão Bonaparte", cat: "conhecimentos" }, { name: "Albert Einstein", cat: "conhecimentos" },
   { name: "Frida Kahlo", cat: "conhecimentos" }, { name: "Mona Lisa", cat: "conhecimentos" }, { name: "Sherlock Holmes", cat: "conhecimentos" },
   { name: "Indiana Jones", cat: "conhecimentos" }, { name: "James Bond", cat: "conhecimentos" }, { name: "Charlie Chaplin", cat: "conhecimentos" },
-  { name: "Rainha Elizabeth II", cat: "conhecimentos" }, { name: "Steve Jobs", cat: "conhecimentos" }, { name: "Willy Wonka", cat: "conhecimentos" }
+  { name: "Rainha Elizabeth II", cat: "conhecimentos" }, { name: "Steve Jobs", cat: "conhecimentos" }, { name: "Willy Wonka", cat: "conhecimentos" },
+  { name: "Leonardo da Vinci", cat: "conhecimentos" }, { name: "Isaac Newton", cat: "conhecimentos" }, { name: "Stephen Hawking", cat: "conhecimentos" },
+  { name: "Nikola Tesla", cat: "conhecimentos" }, { name: "Marie Curie", cat: "conhecimentos" }, { name: "William Shakespeare", cat: "conhecimentos" },
+  { name: "Mozart", cat: "conhecimentos" }, { name: "Beethoven", cat: "conhecimentos" }, { name: "Vincent van Gogh", cat: "conhecimentos" },
+  { name: "Pablo Picasso", cat: "conhecimentos" }, { name: "Mahatma Gandhi", cat: "conhecimentos" }, { name: "Nelson Mandela", cat: "conhecimentos" },
+  { name: "Júlio César", cat: "conhecimentos" }, { name: "Alexandre o Grande", cat: "conhecimentos" }, { name: "Sócrates", cat: "conhecimentos" },
+  { name: "Neil Armstrong", cat: "conhecimentos" }, { name: "Bill Gates", cat: "conhecimentos" }, { name: "Mark Zuckerberg", cat: "conhecimentos" }
 ];
 
 function randomQuemSouCharacter(){
-  const g = room.gameData;
+  const g = room ? room.gameData : null;
   const filterCat = (g && g.filterCat) ? g.filterCat : 'todos';
   let pool = CHARACTER_BANK;
   if(filterCat !== 'todos'){
-    const filtered = CHARACTER_BANK.filter(c => c.cat === filterCat);
+    const filtered = CHARACTER_BANK.filter(c => c && c.cat === filterCat);
     if(filtered.length > 0) pool = filtered;
   }
+  if(!pool || pool.length === 0) pool = CHARACTER_BANK;
   const pick = pool[Math.floor(Math.random() * pool.length)];
-  return pick.name || pick;
+  if (typeof pick === 'object' && pick !== null) {
+    return pick.name || String(pick);
+  }
+  return String(pick || 'Personagem Misterioso');
+}
+
+function getTwoRandomQuemSouCharacters(){
+  let charA = randomQuemSouCharacter();
+  let charB = randomQuemSouCharacter();
+  let attempts = 0;
+  while(charA === charB && attempts < 10){
+    charB = randomQuemSouCharacter();
+    attempts++;
+  }
+  return { charA, charB };
 }
 
 const IMPOSTOR_PAIRS = [
@@ -887,22 +928,28 @@ async function startGame(gameId){
     } else if(gameId==='quemsou'){
       let teamA = (r.gameData && r.gameData.teamA && r.gameData.teamA.length > 0) ? [...r.gameData.teamA] : [];
       let teamB = (r.gameData && r.gameData.teamB && r.gameData.teamB.length > 0) ? [...r.gameData.teamB] : [];
-      if(teamA.length === 0 && teamB.length === 0 && r.players && r.players.length > 0){
-        r.players.forEach((p, idx) => {
-          if(idx % 2 === 0) teamA.push(p.id); else teamB.push(p.id);
-        });
-      }
-      r.gameData = { stage:'teams', filterCat, teamA, teamB, turnIdxA:0, turnIdxB:0, playerAId:null, playerBId:null, character:null };
+      const activeIds = (r.players || []).map(p => p.id);
+      teamA = teamA.filter(id => activeIds.includes(id));
+      teamB = teamB.filter(id => activeIds.includes(id));
+      activeIds.forEach((pid) => {
+        if (!teamA.includes(pid) && !teamB.includes(pid)) {
+          if (teamA.length <= teamB.length) teamA.push(pid); else teamB.push(pid);
+        }
+      });
+      r.gameData = { stage:'teams', filterCat, teamA, teamB, turnIdxA:0, turnIdxB:0, playerAId:null, playerBId:null, characterA:null, characterB:null };
     } else if(gameId==='duvido'){
       let teamA = (r.gameData && r.gameData.teamA && r.gameData.teamA.length > 0) ? [...r.gameData.teamA] : [];
       let teamB = (r.gameData && r.gameData.teamB && r.gameData.teamB.length > 0) ? [...r.gameData.teamB] : [];
-      if(teamA.length === 0 && teamB.length === 0 && r.players && r.players.length > 0){
-        r.players.forEach((p, idx) => {
-          if(idx % 2 === 0) teamA.push(p.id); else teamB.push(p.id);
-        });
-      }
+      const activeIds = (r.players || []).map(p => p.id);
+      teamA = teamA.filter(id => activeIds.includes(id));
+      teamB = teamB.filter(id => activeIds.includes(id));
+      activeIds.forEach((pid) => {
+        if (!teamA.includes(pid) && !teamB.includes(pid)) {
+          if (teamA.length <= teamB.length) teamA.push(pid); else teamB.push(pid);
+        }
+      });
       r.gameData = { stage:'teams', filterCat, teamA, teamB, timeLimit:60, turnTeam:'A', turnIdxA:0, turnIdxB:0,
-        currentPlayerId:null, category:null, required:null, challengerId:null,
+        playerAId:null, playerBId:null, currentPlayerId:null, category:null, required:null, challengerId:null,
         timerStartedAt:null, success:null, scoreA:0, scoreB:0 };
     } else if(gameId==='impostor'){
       r.gameData = { stage:'idle', filterCat, roundId:0, majorityWord:null, impostorWord:null, clue:null, impostorId:null, results:null };
@@ -1011,7 +1058,7 @@ async function nextTopRound(){
 
 /* ---------- Quem Sou Eu ---------- */
 function quemsouScreen(){
-  const g = room.gameData;
+  const g = room ? room.gameData : null;
   if(!g || g.stage==='teams') return quemsouTeamsScreen();
   if(g.stage==='play') return quemsouPlayScreen();
   if(g.stage==='reveal') return quemsouRevealScreen();
@@ -1019,10 +1066,24 @@ function quemsouScreen(){
 }
 
 function quemsouTeamsScreen(){
-  const g = room.gameData;
+  const g = (room && room.gameData) ? room.gameData : {};
   const host = isHost();
-  const teamA = g.teamA || [];
-  const teamB = g.teamB || [];
+  if(!g.teamA) g.teamA = [];
+  if(!g.teamB) g.teamB = [];
+
+  const activeIds = (room.players || []).map(p => p.id);
+  g.teamA = g.teamA.filter(id => activeIds.includes(id));
+  g.teamB = g.teamB.filter(id => activeIds.includes(id));
+  activeIds.forEach(pid => {
+    if(!g.teamA.includes(pid) && !g.teamB.includes(pid)){
+      if(g.teamA.length <= g.teamB.length) g.teamA.push(pid);
+      else g.teamB.push(pid);
+    }
+  });
+
+  const teamA = g.teamA;
+  const teamB = g.teamB;
+
   return `
     <p class="sub">Monte dois times. Em cada rodada, <strong>1 pessoa de cada time NÃO saberá qual é o personagem secreto</strong>, enquanto todos os outros saberão!</p>
     ${renderCategoryFilterHTML(g.filterCat)}
@@ -1034,13 +1095,13 @@ function quemsouTeamsScreen(){
     </div>
     <div class="team-col"><h4>Time 1 (${teamA.length})</h4>${teamA.map(id=>esc((room.players.find(p=>p.id===id)||{}).name||'')).join(', ') || 'vazio'}</div>
     <div class="team-col"><h4>Time 2 (${teamB.length})</h4>${teamB.map(id=>esc((room.players.find(p=>p.id===id)||{}).name||'')).join(', ') || 'vazio'}</div>
-    ${host ? `<button class="btn btn-primary" ${(teamA.length<1||teamB.length<1)?'disabled':''} onclick="startQuemSouBattle()">Começar Quem Sou Eu</button>` : `<p class="hint">Esperando o anfitrião(a) montar os times...</p>`}
+    ${host ? `<button class="btn btn-primary" ${(teamA.length<1||teamB.length<1)?'disabled':''} onclick="startQuemSouBattle()">Começar Quem Sou Eu</button>` : `<div class="banner center" style="margin-top:1rem;"><strong>Times organizados!</strong><br><span class="hint">Esperando o anfitrião(a) iniciar a partida...</span></div>`}
   `;
 }
 
 async function cycleQuemSouTeam(pid){
   await updateRoom(r=>{
-    const g = r.gameData;
+    const g = r.gameData || {};
     if(!g.teamA) g.teamA = [];
     if(!g.teamB) g.teamB = [];
     if(g.teamA.includes(pid)){ g.teamA = g.teamA.filter(x=>x!==pid); g.teamB.push(pid); }
@@ -1049,92 +1110,154 @@ async function cycleQuemSouTeam(pid){
   });
 }
 
-function randomQuemSouCharacter(){
-  return CHARACTER_BANK[Math.floor(Math.random() * CHARACTER_BANK.length)];
-}
-
 async function startQuemSouBattle(){
   await updateRoom(r=>{
-    const g = r.gameData;
+    const g = r.gameData || {};
+    if(!g.teamA) g.teamA = [];
+    if(!g.teamB) g.teamB = [];
+    const activeIds = (r.players || []).map(p => p.id);
+    g.teamA = g.teamA.filter(id => activeIds.includes(id));
+    g.teamB = g.teamB.filter(id => activeIds.includes(id));
+    activeIds.forEach(pid => {
+      if(!g.teamA.includes(pid) && !g.teamB.includes(pid)){
+        if(g.teamA.length <= g.teamB.length) g.teamA.push(pid);
+        else g.teamB.push(pid);
+      }
+    });
+
     g.stage = 'play';
     g.turnIdxA = 0;
     g.turnIdxB = 0;
-    g.playerAId = g.teamA[0];
-    g.playerBId = g.teamB[0];
-    g.character = randomQuemSouCharacter();
+    g.playerAId = g.teamA[0] || (r.players[0] ? r.players[0].id : null);
+    g.playerBId = g.teamB[0] || (r.players[1] ? r.players[1].id : g.playerAId);
+
+    const { charA, charB } = getTwoRandomQuemSouCharacters();
+    g.characterA = charA;
+    g.characterB = charB;
   });
   burstConfetti(18);
 }
 
 function quemsouPlayScreen(){
-  const g = room.gameData;
-  const playerAId = g.playerAId || (g.teamA && g.teamA[0]);
-  const playerBId = g.playerBId || (g.teamB && g.teamB[0]);
+  const g = room.gameData || {};
+  const teamA = g.teamA || [];
+  const teamB = g.teamB || [];
+  const playerAId = g.playerAId || teamA[0] || (room.players[0] && room.players[0].id);
+  const playerBId = g.playerBId || teamB[0] || (room.players[1] && room.players[1].id);
   const playerAName = (room.players.find(p=>p.id===playerAId)||{}).name || 'Alguém do Time 1';
   const playerBName = (room.players.find(p=>p.id===playerBId)||{}).name || 'Alguém do Time 2';
 
-  const isSecret = (me.id === playerAId || me.id === playerBId);
-  let inner = '';
+  let charA = g.characterA || g.character;
+  let charB = g.characterB || g.character;
+  if (typeof charA === 'object' && charA !== null) charA = charA.name || String(charA);
+  if (typeof charB === 'object' && charB !== null) charB = charB.name || String(charB);
+  if (!charA || charA === '[object Object]') charA = randomQuemSouCharacter();
+  if (!charB || charB === '[object Object]') charB = randomQuemSouCharacter();
 
-  if(isSecret){
+  const isA = (me.id === playerAId);
+  const isB = (me.id === playerBId);
+
+  let inner = `
+    <p class="sub center" style="margin-bottom: 1rem;">
+      💬 Responda apenas <strong>"Sim"</strong> ou <strong>"Não"</strong> quando seu oponente ou integrante fizer perguntas!
+    </p>
+  `;
+
+  // Time 1 Box
+  if (isA) {
     inner += `
-      <div class="card center mb" style="border: 2px dashed var(--accent); background: rgba(224, 41, 75, 0.06);">
-        <div class="avatar center" style="background:${colorFor(me.id)}; margin:0 auto .5rem; width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:50%; font-weight:700; color:#fff;">${esc(initials(me.name))}</div>
-        <label class="field-label" style="color:var(--accent); font-weight:700;">Sua Identidade Secreta</label>
-        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.3rem; margin:.3rem 0 0; color:var(--accent);">
-          ❓ ? ? ? (Você NÃO sabe quem é!)
+      <div class="card center mb" style="border: 2px dashed var(--secondary); background: rgba(6, 182, 212, 0.08); padding: 1.2rem 1rem;">
+        <div class="badge" style="background: var(--secondary); color:#fff; font-size:.8rem; margin: 0 auto .4rem;">TIME 1 — SUA VEZ DE ADIVINHAR</div>
+        <div class="avatar center" style="background:${colorFor(me.id)}; margin:0 auto .4rem; width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:50%; font-weight:700; color:#fff;">${esc(initials(me.name))}</div>
+        <label class="field-label" style="color:var(--secondary); font-weight:700;">Seu Personagem Secreto</label>
+        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.6rem; margin:.3rem 0 .2rem; color:var(--secondary);">
+          ❓ ? ? ? (Você NÃO sabe!)
         </p>
-        <p class="hint" style="margin-top:.5rem; font-style:italic; color:#900020;">
-          Faça perguntas de "Sim" ou "Não" para os outros até descobrir quem você é!
+        <p class="hint" style="margin-top:.4rem; font-style:italic;">
+          Faça perguntas de "Sim" ou "Não" para o grupo até descobrir quem você é!
         </p>
       </div>
-      <p class="hint mb" style="text-align:center;">
-        🤫 Tentando adivinhar nesta rodada: <strong>${esc(playerAName)}</strong> (T1) e <strong>${esc(playerBName)}</strong> (T2)
-      </p>
     `;
   } else {
     inner += `
-      <div class="card center mb">
-        <label class="field-label">Personagem Secreto da Rodada</label>
-        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.4rem; margin:.3rem 0 0; color:var(--accent);">${esc(g.character)}</p>
-        <p class="hint" style="margin-top:.5rem;">
-          🤫 Não sabem quem são: <strong>${esc(playerAName)}</strong> (Time 1) e <strong>${esc(playerBName)}</strong> (Time 2)
+      <div class="card center mb" style="border: 1px solid rgba(6, 182, 212, 0.3); padding: 1.2rem 1rem;">
+        <div class="badge" style="background: rgba(6, 182, 212, 0.2); color: var(--secondary); font-size:.78rem; margin: 0 auto .4rem;">TIME 1 — ${esc(playerAName)} adivinha</div>
+        <label class="field-label" style="font-weight:700; color:var(--dim);">Personagem Secreto do Time 1</label>
+        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.6rem; margin:.3rem 0; color:var(--secondary);">${esc(charA)}</p>
+        <p class="hint" style="margin-top:.3rem; font-size:.82rem;">
+          🤫 <strong>${esc(playerAName)}</strong> NÃO sabe quem é este personagem. Responda as perguntas dele(a)!
         </p>
-        <p class="sub" style="margin-top:.6rem; font-size:.85rem;">Responda apenas com "Sim" ou "Não" quando eles fizerem perguntas!</p>
+      </div>
+    `;
+  }
+
+  // Time 2 Box
+  if (isB) {
+    inner += `
+      <div class="card center mb" style="border: 2px dashed var(--accent); background: rgba(139, 92, 246, 0.08); padding: 1.2rem 1rem;">
+        <div class="badge" style="background: var(--accent); color:#fff; font-size:.8rem; margin: 0 auto .4rem;">TIME 2 — SUA VEZ DE ADIVINHAR</div>
+        <div class="avatar center" style="background:${colorFor(me.id)}; margin:0 auto .4rem; width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:50%; font-weight:700; color:#fff;">${esc(initials(me.name))}</div>
+        <label class="field-label" style="color:var(--accent); font-weight:700;">Seu Personagem Secreto</label>
+        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.6rem; margin:.3rem 0 .2rem; color:var(--accent);">
+          ❓ ? ? ? (Você NÃO sabe!)
+        </p>
+        <p class="hint" style="margin-top:.4rem; font-style:italic;">
+          Faça perguntas de "Sim" ou "Não" para o grupo até descobrir quem você é!
+        </p>
+      </div>
+    `;
+  } else {
+    inner += `
+      <div class="card center mb" style="border: 1px solid rgba(139, 92, 246, 0.3); padding: 1.2rem 1rem;">
+        <div class="badge" style="background: rgba(139, 92, 246, 0.2); color: var(--accent); font-size:.78rem; margin: 0 auto .4rem;">TIME 2 — ${esc(playerBName)} adivinha</div>
+        <label class="field-label" style="font-weight:700; color:var(--dim);">Personagem Secreto do Time 2</label>
+        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.6rem; margin:.3rem 0; color:var(--accent);">${esc(charB)}</p>
+        <p class="hint" style="margin-top:.3rem; font-size:.82rem;">
+          🤫 <strong>${esc(playerBName)}</strong> NÃO sabe quem é este personagem. Responda as perguntas dele(a)!
+        </p>
       </div>
     `;
   }
 
   if(isHost()){
-    inner += `<button class="btn btn-primary" onclick="revealQuemSou()">Revelar personagem e encerrar rodada</button>`;
+    inner += `<button class="btn btn-primary" onclick="revealQuemSou()">Revelar personagens e encerrar rodada</button>`;
   } else {
-    inner += `<p class="hint">O anfitrião(a) encerrará a rodada quando terminarem as perguntas...</p>`;
+    inner += `<p class="hint center" style="margin-top:.8rem;">O anfitrião(a) encerrará a rodada quando terminarem as perguntas...</p>`;
   }
   return inner;
 }
 
 async function revealQuemSou(){
-  await updateRoom(r=>{ r.gameData.stage = 'reveal'; });
+  await updateRoom(r=>{ if (r.gameData) r.gameData.stage = 'reveal'; });
   burstConfetti(25);
 }
 
 function quemsouRevealScreen(){
-  const g = room.gameData;
-  const playerAId = g.playerAId || (g.teamA && g.teamA[0]);
-  const playerBId = g.playerBId || (g.teamB && g.teamB[0]);
+  const g = room.gameData || {};
+  const playerAId = g.playerAId;
+  const playerBId = g.playerBId;
   const playerAName = (room.players.find(p=>p.id===playerAId)||{}).name || 'Alguém do Time 1';
   const playerBName = (room.players.find(p=>p.id===playerBId)||{}).name || 'Alguém do Time 2';
 
+  let charA = g.characterA || g.character;
+  let charB = g.characterB || g.character;
+  if (typeof charA === 'object' && charA !== null) charA = charA.name || String(charA);
+  if (typeof charB === 'object' && charB !== null) charB = charB.name || String(charB);
+
   let inner = `
     <div class="card center mb">
-      <div style="font-size:2rem;">🎭</div>
-      <label class="field-label">O Personagem Secreto era</label>
-      <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.5rem; margin:.3rem 0; color:var(--accent);">
-        ${esc(g.character)}
-      </p>
-      <p class="hint" style="margin-top:.5rem;">
-        Tentavam adivinhar: <strong>${esc(playerAName)}</strong> (Time 1) e <strong>${esc(playerBName)}</strong> (Time 2)
-      </p>
+      <div style="font-size:2.2rem; margin-bottom:.3rem;">🎭</div>
+      <label class="field-label">Resultado da Rodada</label>
+      
+      <div style="margin: 1rem 0; padding: .8rem; background: rgba(6, 182, 212, 0.1); border-radius: 12px; border: 1px solid rgba(6, 182, 212, 0.3);">
+        <span style="font-size: .8rem; color: var(--secondary); font-weight: 700; text-transform: uppercase;">Time 1 (${esc(playerAName)})</span>
+        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.4rem; margin:.2rem 0 0; color:var(--text);">${esc(charA)}</p>
+      </div>
+
+      <div style="margin: .8rem 0; padding: .8rem; background: rgba(139, 92, 246, 0.1); border-radius: 12px; border: 1px solid rgba(139, 92, 246, 0.3);">
+        <span style="font-size: .8rem; color: var(--accent); font-weight: 700; text-transform: uppercase;">Time 2 (${esc(playerBName)})</span>
+        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.4rem; margin:.2rem 0 0; color:var(--text);">${esc(charB)}</p>
+      </div>
     </div>
   `;
 
@@ -1146,19 +1269,25 @@ function quemsouRevealScreen(){
       </div>
     `;
   } else {
-    inner += `<p class="hint">Esperando a próxima rodada...</p>`;
+    inner += `<p class="hint center">Esperando a próxima rodada...</p>`;
   }
   return inner;
 }
 
 async function nextQuemSouRound(){
   await updateRoom(r=>{
-    const g = r.gameData;
-    g.turnIdxA = (g.turnIdxA + 1) % g.teamA.length;
-    g.turnIdxB = (g.turnIdxB + 1) % g.teamB.length;
+    const g = r.gameData || {};
+    if (!g.teamA || g.teamA.length === 0) g.teamA = (r.players || []).map(p=>p.id);
+    if (!g.teamB || g.teamB.length === 0) g.teamB = (r.players || []).map(p=>p.id);
+
+    g.turnIdxA = ((g.turnIdxA || 0) + 1) % g.teamA.length;
+    g.turnIdxB = ((g.turnIdxB || 0) + 1) % g.teamB.length;
     g.playerAId = g.teamA[g.turnIdxA % g.teamA.length];
     g.playerBId = g.teamB[g.turnIdxB % g.teamB.length];
-    g.character = randomQuemSouCharacter();
+
+    const { charA, charB } = getTwoRandomQuemSouCharacters();
+    g.characterA = charA;
+    g.characterB = charB;
     g.stage = 'play';
   });
   burstConfetti(18);
@@ -1166,7 +1295,9 @@ async function nextQuemSouRound(){
 
 async function resetQuemSouTeams(){
   await updateRoom(r=>{
-    r.gameData.stage = 'teams';
+    if (r.gameData) {
+      r.gameData.stage = 'teams';
+    }
   });
 }
 
@@ -1191,225 +1322,293 @@ function duvidoScreen(){
   return '';
 }
 function duvidoTeamsScreen(){
-  const g = room.gameData;
+  const g = (room && room.gameData) ? room.gameData : {};
   const host = isHost();
+  if(!g.teamA) g.teamA = [];
+  if(!g.teamB) g.teamB = [];
+
+  const activeIds = (room.players || []).map(p => p.id);
+  g.teamA = g.teamA.filter(id => activeIds.includes(id));
+  g.teamB = g.teamB.filter(id => activeIds.includes(id));
+  activeIds.forEach(pid => {
+    if(!g.teamA.includes(pid) && !g.teamB.includes(pid)){
+      if(g.teamA.length <= g.teamB.length) g.teamA.push(pid);
+      else g.teamB.push(pid);
+    }
+  });
+
+  const teamA = g.teamA;
+  const teamB = g.teamB;
+
   return `
-    <p class="sub">Monte dois times. Em cada rodada, <strong>1 pessoa de cada time NÃO saberá o tema secretamente</strong>, enquanto todos os outros saberão!</p>
+    <p class="sub">Monte dois times. A cada rodada, o time adversário escolhe quantos itens a pessoa na roda precisa citar antes que o tempo esgote!</p>
     ${renderCategoryFilterHTML(g.filterCat)}
     <div class="chip-row mb">
       ${room.players.map(p=>{
-        const cls = g.teamA.includes(p.id) ? 'teamA' : g.teamB.includes(p.id) ? 'teamB' : '';
+        const cls = teamA.includes(p.id) ? 'teamA' : teamB.includes(p.id) ? 'teamB' : '';
         return `<div class="pick-chip ${cls}" ${host?`onclick="cycleDuvidoTeam('${p.id}')"`:''}>${esc(p.name)}</div>`;
       }).join('')}
     </div>
-    <div class="team-col"><h4>Time 1 (${g.teamA.length})</h4>${g.teamA.map(id=>esc((room.players.find(p=>p.id===id)||{}).name||'')).join(', ') || 'vazio'}</div>
-    <div class="team-col"><h4>Time 2 (${g.teamB.length})</h4>${g.teamB.map(id=>esc((room.players.find(p=>p.id===id)||{}).name||'')).join(', ') || 'vazio'}</div>
-    <label class="field-label">Tempo por rodada</label>
+    <div class="team-col"><h4>Time 1 (${teamA.length})</h4>${teamA.map(id=>esc((room.players.find(p=>p.id===id)||{}).name||'')).join(', ') || 'vazio'}</div>
+    <div class="team-col"><h4>Time 2 (${teamB.length})</h4>${teamB.map(id=>esc((room.players.find(p=>p.id===id)||{}).name||'')).join(', ') || 'vazio'}</div>
+    <label class="field-label" style="margin-top:.8rem;">Tempo por rodada</label>
     <div class="chip-row mb">
       <div class="pick-chip ${g.timeLimit===30?'selected':''}" ${host?`onclick="setDuvidoTime(30)"`:''}>30 segundos</div>
-      <div class="pick-chip ${g.timeLimit===60?'selected':''}" ${host?`onclick="setDuvidoTime(60)"`:''}>60 segundos</div>
+      <div class="pick-chip ${g.timeLimit!==30?'selected':''}" ${host?`onclick="setDuvidoTime(60)"`:''}>60 segundos</div>
     </div>
-    ${host ? `<button class="btn btn-primary" ${(g.teamA.length<1||g.teamB.length<1)?'disabled':''} onclick="startDuvidoBattle()">Começar Duvido</button>` : `<p class="hint">Esperando o anfitrião(a) montar os times...</p>`}
+    ${host ? `<button class="btn btn-primary" ${(teamA.length<1||teamB.length<1)?'disabled':''} onclick="startDuvidoBattle()">Começar Duvido</button>` : `<div class="banner center" style="margin-top:1rem;"><strong>Times organizados!</strong><br><span class="hint">Esperando o anfitrião(a) iniciar a partida...</span></div>`}
   `;
 }
 async function cycleDuvidoTeam(pid){
   await updateRoom(r=>{
-    const g = r.gameData;
+    const g = r.gameData || {};
+    if(!g.teamA) g.teamA = [];
+    if(!g.teamB) g.teamB = [];
     if(g.teamA.includes(pid)){ g.teamA = g.teamA.filter(x=>x!==pid); g.teamB.push(pid); }
     else if(g.teamB.includes(pid)){ g.teamB = g.teamB.filter(x=>x!==pid); }
     else { g.teamA.push(pid); }
   });
 }
-async function setDuvidoTime(t){ await updateRoom(r=>{ r.gameData.timeLimit=t; }); }
-function randomDuvidoCategory(){
-  const pool = [...CATEGORIES.facil, ...CATEGORIES.media, ...CATEGORIES.dificil];
-  return pool[Math.floor(Math.random()*pool.length)];
-}
+async function setDuvidoTime(t){ await updateRoom(r=>{ if(r.gameData) r.gameData.timeLimit=t; }); }
+
 async function startDuvidoBattle(){
   clearDuvidoTicker();
   duvidoCountDraft = 5;
   await updateRoom(r=>{
-    const g = r.gameData;
-    g.stage='challenge';
-    g.turnTeam='A';
-    g.turnIdxA=0; g.turnIdxB=0;
-    g.playerAId = g.teamA[0];
-    g.playerBId = g.teamB[0];
+    const g = r.gameData || {};
+    if(!g.teamA) g.teamA = [];
+    if(!g.teamB) g.teamB = [];
+    const activeIds = (r.players || []).map(p => p.id);
+    g.teamA = g.teamA.filter(id => activeIds.includes(id));
+    g.teamB = g.teamB.filter(id => activeIds.includes(id));
+    activeIds.forEach(pid => {
+      if(!g.teamA.includes(pid) && !g.teamB.includes(pid)){
+        if(g.teamA.length <= g.teamB.length) g.teamA.push(pid);
+        else g.teamB.push(pid);
+      }
+    });
+
+    g.stage = 'challenge';
+    g.turnTeam = 'A';
+    g.turnIdxA = 0;
+    g.turnIdxB = 0;
+    g.playerAId = g.teamA[0] || (r.players[0] ? r.players[0].id : null);
+    g.playerBId = g.teamB[0] || (r.players[1] ? r.players[1].id : g.playerAId);
     g.currentPlayerId = g.playerAId;
-    g.category=randomDuvidoCategory(); g.required=null; g.challengerId=null;
-    g.timerStartedAt=null; g.success=null;
-    g.scoreA=0; g.scoreB=0;
+    g.category = randomDuvidoCategory();
+    g.required = null;
+    g.challengerId = null;
+    g.timerStartedAt = null;
+    g.success = null;
+    g.scoreA = 0;
+    g.scoreB = 0;
   });
+  burstConfetti(18);
 }
+
 function duvidoChallengeScreen(){
-  const g = room.gameData;
+  const g = room.gameData || {};
   const playerAId = g.playerAId || (g.teamA && g.teamA[0]);
   const playerBId = g.playerBId || (g.teamB && g.teamB[0]);
   const playerAName = (room.players.find(p=>p.id===playerAId)||{}).name || 'Alguém do Time 1';
   const playerBName = (room.players.find(p=>p.id===playerBId)||{}).name || 'Alguém do Time 2';
 
-  const targetTeam = teamOf(g.currentPlayerId);
-  const targetName = (room.players.find(p=>p.id===g.currentPlayerId)||{}).name || '???';
+  const targetTeam = teamOf(g.currentPlayerId) || 'A';
+  const targetName = (room.players.find(p=>p.id===g.currentPlayerId)||{}).name || 'Alguém';
   const myTeam = teamOf(me.id);
 
   let inner = duvidoScoreHeader();
-  inner += `<div class="prompt-box"><div class="eyebrow">Na roda</div><div class="prompt-text">${esc(targetName)} (Time ${targetTeam==='A'?'1':'2'})</div></div>`;
+  inner += `
+    <div class="prompt-box mb">
+      <div class="eyebrow">Na roda (Vez de responder)</div>
+      <div class="prompt-text">${esc(targetName)} (Time ${targetTeam==='A'?'1':'2'})</div>
+    </div>
+  `;
 
+  // Secret for 1 player of each team (playerAId and playerBId)
   const isSecret = (me.id === playerAId || me.id === playerBId);
 
-  if(isSecret){
+  if (isSecret) {
     inner += `
-      <div class="card center" style="border: 2px dashed var(--accent); background: rgba(224, 41, 75, 0.06);">
+      <div class="card center mb" style="border: 2px dashed var(--accent); background: rgba(139, 92, 246, 0.08); padding: 1.2rem 1rem;">
         <label class="field-label" style="color:var(--accent); font-weight:700;">Tema Sorteado</label>
-        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.2rem; margin:.2rem 0 0; color:var(--accent);">
-          🔒 Secret (Você NÃO sabe o tema!)
+        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.4rem; margin:.3rem 0; color:var(--accent);">
+          🔒 Tema Secreto (Você NÃO sabe!)
         </p>
-        <p class="hint" style="margin-top:.4rem; font-style:italic; color:#900020;">
-          Você e 1 pessoa do time adversário não sabem o tema desta rodada.
+        <p class="hint" style="margin-top:.4rem; font-style:italic;">
+          Você e 1 integrante do outro time não sabem o tema desta rodada!
         </p>
       </div>
     `;
   } else {
     inner += `
-      <div class="card center">
-        <label class="field-label">Tema sorteado</label>
-        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.15rem; margin:.2rem 0 0;">${esc(g.category)}</p>
-        <p class="hint" style="margin-top:.4rem;">
-          🤫 Não sabem o tema: <strong>${esc(playerAName)}</strong> (T1) e <strong>${esc(playerBName)}</strong> (T2)
+      <div class="card center mb" style="padding: 1.2rem 1rem;">
+        <label class="field-label" style="font-weight:700; color:var(--dim);">Tema Sorteado</label>
+        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.4rem; margin:.3rem 0; color:var(--accent);">${esc(g.category)}</p>
+        <p class="hint" style="margin-top:.3rem; font-size:.82rem;">
+          🤫 <strong>Não sabem o tema:</strong> <span style="color:var(--secondary); font-weight:600;">${esc(playerAName)}</span> (Time 1) & <span style="color:var(--accent); font-weight:600;">${esc(playerBName)}</span> (Time 2)
         </p>
       </div>
     `;
   }
 
-  if(g.required===null){
+  if(g.required === null){
     clearDuvidoTicker();
-    if(myTeam && myTeam!==targetTeam){
+    if(myTeam && myTeam !== targetTeam){
       inner += `
-        <p class="sub">Decidam entre vocês quantos itens ${esc(targetName)} precisa dizer em ${g.timeLimit}s — essa escolha é só do seu time.</p>
-        <div class="stepper">
-          <button onclick="adjustDuvidoCount(-1)">−</button>
-          <div class="req-num">${duvidoCountDraft}</div>
-          <button onclick="adjustDuvidoCount(1)">+</button>
+        <div class="card center mb">
+          <p class="sub mb" style="margin-bottom:.8rem;">Definam em grupo quantos itens <strong>${esc(targetName)}</strong> precisa citar em ${g.timeLimit} segundos:</p>
+          <div class="stepper mb">
+            <button onclick="adjustDuvidoCount(-1)">−</button>
+            <div class="req-num">${duvidoCountDraft}</div>
+            <button onclick="adjustDuvidoCount(1)">+</button>
+          </div>
+          <button class="btn btn-primary" onclick="confirmDuvidoChallenge()">Desafiar!</button>
         </div>
-        <button class="btn btn-primary" onclick="confirmDuvidoChallenge()">Desafiar!</button>
       `;
     } else {
-      inner += `<p class="hint">O time adversário está decidindo quantos itens você vai precisar dizer...</p>`;
+      inner += `
+        <div class="banner center mb">
+          ⏳ O time adversário está decidindo o tamanho do desafio para <strong>${esc(targetName)}</strong>...
+        </div>
+      `;
     }
   } else if(!g.timerStartedAt){
     clearDuvidoTicker();
     inner += `
-      <div class="card">
-        <label class="field-label">Precisa dizer</label>
-        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.35rem; margin:.2rem 0;">${g.required} itens em ${g.timeLimit}s</p>
+      <div class="card center mb">
+        <label class="field-label">Desafio Aceito!</label>
+        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.4rem; margin:.3rem 0; color:var(--secondary);">
+          Dizer <strong>${g.required}</strong> itens em ${g.timeLimit}s
+        </p>
       </div>`;
     if(isHost()){
-      inner += `<button class="btn btn-primary" onclick="startDuvidoTimer()">Começar cronômetro</button>`;
+      inner += `<button class="btn btn-primary" onclick="startDuvidoTimer()">Iniciar Cronômetro!</button>`;
     } else {
-      inner += `<p class="hint">Esperando o anfitrião(a) começar o cronômetro...</p>`;
+      inner += `<p class="hint center">Esperando o anfitrião(a) iniciar o cronômetro...</p>`;
     }
   } else {
     const remaining = Math.max(0, g.timeLimit - Math.floor((Date.now()-g.timerStartedAt)/1000));
     if(remaining > 0){
       ensureDuvidoTicker();
       inner += `
-        <div class="card center"><label class="field-label">Precisa dizer</label><p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.1rem; margin:.2rem 0 0;">${g.required} itens</p></div>
-        <div class="timer-num">${remaining}s</div>
-        <p class="hint">${esc(targetName)}, fale em voz alta!</p>
+        <div class="card center mb">
+          <label class="field-label">Desafio em andamento</label>
+          <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.2rem; margin:.2rem 0;">Dizer ${g.required} itens</p>
+          <div class="timer-num" style="font-size:3rem; font-weight:700; color:var(--secondary); margin:.4rem 0;">${remaining}s</div>
+          <p class="hint">🗣️ <strong>${esc(targetName)}</strong>, fale em voz alta os itens!</p>
+        </div>
       `;
     } else {
       clearDuvidoTicker();
       inner += `
-        <div class="prompt-box"><div class="eyebrow">Tempo esgotado</div><div class="prompt-text">${g.required} itens da rodada</div></div>
+        <div class="prompt-box mb center">
+          <div class="eyebrow" style="color:var(--danger);">⏱️ Tempo esgotado!</div>
+          <div class="prompt-text">Devia dizer ${g.required} itens do tema</div>
+        </div>
       `;
       if(isHost()){
         inner += `
           <div class="btn-row">
-            <button class="btn btn-success" onclick="markDuvidoResult(true)">Conseguiu</button>
-            <button class="btn btn-danger" onclick="markDuvidoResult(false)">Não conseguiu</button>
+            <button class="btn btn-success" onclick="markDuvidoResult(true)">Conseguiu 👍</button>
+            <button class="btn btn-danger" onclick="markDuvidoResult(false)">Não conseguiu 👎</button>
           </div>`;
       } else {
-        inner += `<p class="hint">Esperando o anfitrião(a) marcar o resultado...</p>`;
+        inner += `<p class="hint center">Esperando o anfitrião(a) marcar o resultado...</p>`;
       }
     }
   }
   return inner;
 }
+
 function adjustDuvidoCount(delta){ duvidoCountDraft = Math.max(1, duvidoCountDraft+delta); render(); }
+
 async function confirmDuvidoChallenge(){
   await updateRoom(r=>{
-    r.gameData.required=duvidoCountDraft;
-    r.gameData.challengerId=me.id;
-    r.gameData.timerStartedAt=null;
+    if (r.gameData) {
+      r.gameData.required = duvidoCountDraft;
+      r.gameData.challengerId = me.id;
+      r.gameData.timerStartedAt = null;
+    }
   });
 }
+
 async function startDuvidoTimer(){
-  await updateRoom(r=>{ r.gameData.timerStartedAt = Date.now(); });
+  await updateRoom(r=>{ if (r.gameData) r.gameData.timerStartedAt = Date.now(); });
 }
+
 async function markDuvidoResult(success){
   clearDuvidoTicker();
   await updateRoom(r=>{
-    const g = r.gameData;
-    g.stage='result';
-    g.success=success;
-    const targetTeam = (g.teamA.includes(g.currentPlayerId)) ? 'A' : 'B';
+    const g = r.gameData || {};
+    g.stage = 'result';
+    g.success = success;
+    const targetTeam = (g.teamA && g.teamA.includes(g.currentPlayerId)) ? 'A' : 'B';
     if(success){
-      if(targetTeam==='A') g.scoreA += 1; else g.scoreB += 1;
-      const pl = r.players.find(p=>p.id===g.currentPlayerId);
+      if(targetTeam==='A') g.scoreA = (g.scoreA||0) + 1; else g.scoreB = (g.scoreB||0) + 1;
+      const pl = (r.players || []).find(p=>p.id===g.currentPlayerId);
       if(pl) pl.score = (pl.score||0)+1;
     } else {
       const challengerTeam = targetTeam==='A' ? 'B' : 'A';
-      if(challengerTeam==='A') g.scoreA += 1; else g.scoreB += 1;
-      const ch = r.players.find(p=>p.id===g.challengerId);
+      if(challengerTeam==='A') g.scoreA = (g.scoreA||0) + 1; else g.scoreB = (g.scoreB||0) + 1;
+      const ch = (r.players || []).find(p=>p.id===g.challengerId);
       if(ch) ch.score = (ch.score||0)+1;
     }
   });
   burstConfetti(success ? 24 : 10);
 }
+
 function duvidoResultScreen(){
-  const g = room.gameData;
+  const g = room.gameData || {};
   const playerAId = g.playerAId || (g.teamA && g.teamA[0]);
   const playerBId = g.playerBId || (g.teamB && g.teamB[0]);
   const playerAName = (room.players.find(p=>p.id===playerAId)||{}).name || 'Alguém do Time 1';
   const playerBName = (room.players.find(p=>p.id===playerBId)||{}).name || 'Alguém do Time 2';
 
-  const targetName = (room.players.find(p=>p.id===g.currentPlayerId)||{}).name || '???';
+  const targetName = (room.players.find(p=>p.id===g.currentPlayerId)||{}).name || 'Alguém';
   let inner = duvidoScoreHeader();
   inner += `
-    <div class="card center">
-      <div style="font-size:2.2rem;">${g.success?'✅':'❌'}</div>
-      <p style="font-family:'Space Grotesk',sans-serif; font-weight:600; font-size:1.1rem; margin:.5rem 0 0;">
-        ${esc(targetName)} ${g.success?'conseguiu':'não conseguiu'} dizer ${g.required} itens!
+    <div class="card center mb" style="padding:1.5rem 1rem;">
+      <div style="font-size:3rem; margin-bottom:.3rem;">${g.success?'🎉':'❌'}</div>
+      <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.3rem; margin:.4rem 0;">
+        ${esc(targetName)} ${g.success?'conseguiu':'não conseguiu'} citar os ${g.required} itens!
       </p>
-      <div style="margin-top:.8rem; padding:.6rem; background:rgba(224, 41, 75, 0.08); border-radius:12px;">
-        <span style="font-size:0.85rem; text-transform:uppercase; letter-spacing:0.05em; font-weight:700; color:var(--accent);">Tema Secreto Revelado</span>
-        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.2rem; margin:.2rem 0 0; color:var(--accent);">"${esc(g.category)}"</p>
+      <div style="margin-top:.8rem; padding:.8rem; background:rgba(139, 92, 246, 0.1); border-radius:12px; border:1px solid rgba(139, 92, 246, 0.3);">
+        <span style="font-size:0.85rem; font-weight:700; color:var(--accent); text-transform:uppercase;">Tema Secreto Revelado</span>
+        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.4rem; margin:.2rem 0 0; color:var(--text);">"${esc(g.category)}"</p>
       </div>
-      <p class="hint" style="margin-top:.5rem;">
-        (Não sabiam o tema: <strong>${esc(playerAName)}</strong> e <strong>${esc(playerBName)}</strong>)
+      <p class="hint" style="margin-top:.6rem;">
+        Tentavam responder sem saber o tema: <strong>${esc(playerAName)}</strong> (Time 1) e <strong>${esc(playerBName)}</strong> (Time 2)
       </p>
     </div>
   `;
   if(isHost()) inner += `<button class="btn btn-primary" onclick="nextDuvidoTurn()">Próxima rodada</button>`;
-  else inner += `<p class="hint">Esperando a próxima rodada...</p>`;
+  else inner += `<p class="hint center">Esperando a próxima rodada...</p>`;
   return inner;
 }
+
 async function nextDuvidoTurn(){
   clearDuvidoTicker();
   duvidoCountDraft = 5;
   await updateRoom(r=>{
-    const g = r.gameData;
-    if(g.turnTeam==='A'){ g.turnIdxA = (g.turnIdxA+1) % g.teamA.length; }
-    else { g.turnIdxB = (g.turnIdxB+1) % g.teamB.length; }
+    const g = r.gameData || {};
+    if(!g.teamA || g.teamA.length === 0) g.teamA = (r.players || []).map(p=>p.id);
+    if(!g.teamB || g.teamB.length === 0) g.teamB = (r.players || []).map(p=>p.id);
+
+    if(g.turnTeam==='A'){ g.turnIdxA = ((g.turnIdxA||0)+1) % g.teamA.length; }
+    else { g.turnIdxB = ((g.turnIdxB||0)+1) % g.teamB.length; }
     g.turnTeam = g.turnTeam==='A' ? 'B' : 'A';
-    
+
     g.playerAId = g.teamA[g.turnIdxA % g.teamA.length];
     g.playerBId = g.teamB[g.turnIdxB % g.teamB.length];
     g.currentPlayerId = g.turnTeam==='A' ? g.playerAId : g.playerBId;
 
-    g.category=randomDuvidoCategory(); g.required=null; g.challengerId=null;
-    g.timerStartedAt=null; g.success=null;
-    g.stage='challenge';
+    g.category = randomDuvidoCategory();
+    g.required = null;
+    g.challengerId = null;
+    g.timerStartedAt = null;
+    g.success = null;
+    g.stage = 'challenge';
   });
 }
 
