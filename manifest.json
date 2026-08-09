@@ -1,7 +1,7 @@
 {
-  "name": "Cerejinha - Jogos de Festa",
-  "short_name": "Cerejinha",
-  "description": "Jogos de festa multiplayer, tema cerejinha. Cada um joga no proprio celular.",
+  "name": "Party Games - Jogos de Festa",
+  "short_name": "Party Games",
+  "description": "Jogos de festa multiplayer. Cada um joga no próprio celular.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
