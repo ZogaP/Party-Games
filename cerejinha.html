@@ -371,6 +371,46 @@ const TOP = [
   { text: "Mais provável de trancar a chave dentro de casa ou do carro", cat: "variados" }
 ];
 
+const CAT_LABELS = [
+  { id: 'todos', name: 'Todos' },
+  { id: 'pop', name: 'Pop & TV' },
+  { id: 'esportes', name: 'Esportes' },
+  { id: 'brasil', name: 'Brasil' },
+  { id: 'geek', name: 'Geek' },
+  { id: 'conhecimentos', name: 'Conhecimentos' },
+  { id: 'variados', name: 'Variados' }
+];
+
+function renderCategoryFilterHTML(currentCat){
+  const host = isHost();
+  const activeCat = currentCat || 'todos';
+  return `
+    <div class="category-filter-wrap mb">
+      <label class="field-label" style="margin-bottom:.3rem; text-align:center; display:block;">Categoria</label>
+      <div class="chip-row center" style="justify-content:center; margin-top:.2rem;">
+        ${CAT_LABELS.map(c => `
+          <div class="pick-chip ${activeCat === c.id ? 'selected' : ''}" 
+               ${host ? `onclick="setCategoryFilter('${c.id}')"` : 'style="opacity:0.7; cursor:default;"'}>
+            ${esc(c.name)}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+async function setCategoryFilter(cat){
+  if(!isHost()) return;
+  await updateRoom(r => {
+    if(r.gameData){
+      r.gameData.filterCat = cat;
+      if(r.activeGame === 'top'){
+        r.gameData.promptText = getTopPromptText(r.gameData.idx || 0, cat);
+      }
+    }
+  });
+}
+
 function getTopPromptText(idx, filterCat){
   let pool = TOP;
   if(filterCat && filterCat !== 'todos'){
@@ -382,16 +422,70 @@ function getTopPromptText(idx, filterCat){
 }
 
 const CATEGORIES = {
-  pop: ["Filmes da Disney ou Pixar", "Séries de TV famosas", "Cantores(as) brasileiros(as)", "Desenhos animados", "Personagens de novela", "Reality shows ou programas de TV", "Memes ou trends do TikTok", "Trilhas sonoras de filmes", "Artistas com mais Grammy", "Atores/Atrizes vencedores de Oscar", "Bandas de rock famosas", "Super-heróis do cinema"],
-  esportes: ["Times de futebol brasileiros", "Times da Champions League", "Esportes olímpicos", "Pilotos de Fórmula 1", "Jogadores de futebol Bola de Ouro", "Esportes de raquete", "Marcas de artigos esportivos", "Estádios de futebol brasileiros", "Lutadores de MMA/UFC", "Modalidades de atletismo"],
-  brasil: ["Capitais dos estados brasileiros", "Doces ou sobremesas brasileiras", "Rios do Brasil", "Pratos típicos da culinária brasileira", "Frutas nativas do Brasil", "Ritmos musicais brasileiros", "Novelas marcantes da TV Globo", "Cidades turísticas brasileiras", "Grandes personalidades da história do Brasil", "Parques nacionais brasileiros"],
-  geek: ["Personagens de Harry Potter", "Jogos de videogame famosos", "Consoles de videogame de todos os tempos", "Pokémons da 1ª Geração", "Super-heróis Marvel ou DC", "Personagens de Star Wars", "Animes/Desenhos japoneses populares", "Vilões famosos dos videogames", "Armas ou itens épicos da cultura nerd", "Classics da Nintendo"],
-  conhecimentos: ["Elementos da tabela periódica", "Países da África", "Países da Europa", "Capitais de países", "Línguas mais faladas no mundo", "Signos do zodíaco", "Presidentes do Brasil ou EUA", "Planetas e luas do Sistema Solar", "Nobel da Paz ou Literatura", "Grandes invenções da humanidade"],
-  variados: ["Frutas", "Sabores de sorvete", "Sabores de bolo ou recheio", "Cores", "Animais", "Marcas de carro", "Objetos de cozinha", "Profissões", "Marcas de refrigerante ou bebida", "Apps de celular", "Marcas de roupa", "Instrumentos musicais", "Peças de um carro", "Marcas de perfume"]
+  pop: [
+    "Filmes da Disney ou Pixar", "Séries de TV famosas", "Cantores(as) brasileiros(as)", "Desenhos animados de TV",
+    "Personagens de novela marcantes", "Reality shows ou programas de TV", "Memes ou trends do TikTok/Instagram",
+    "Trilhas sonoras e músicas de filme", "Artistas com mais prêmios Grammy", "Atores/Atrizes vencedores de Oscar",
+    "Bandas de rock famosas", "Super-heróis dos cinemas", "Vilões marcantes da Disney", "Séries originais da Netflix",
+    "Cantores de pop internacional", "Duplas ou bandas de K-Pop", "Filmes que arrecadaram mais de 1 bilhão",
+    "Atores brasileiros de comédia", "Apresentadores de TV brasileira", "Musicais famosos do cinema ou teatro",
+    "Personagens de sitcoms (Friends, Chaves, etc)", "Bordões ou frases famosas da TV", "Videoclipes com mais de 1 bilhão de views",
+    "Filmes de terror/suspense famosos", "Sagas literárias adaptadas para o cinema"
+  ],
+  esportes: [
+    "Times de futebol brasileiros da Série A", "Times da Champions League europeia", "Esportes olímpicos de verão",
+    "Pilotos campeões de Fórmula 1", "Jogadores de futebol vencedores da Bola de Ouro", "Esportes praticados com raquete",
+    "Marcas de artigos esportivos", "Estádios de futebol brasileiros", "Lutadores de MMA ou UFC famosos",
+    "Modalidades de atletismo", "Seleções campeãs da Copa do Mundo", "Maiores artilheiros da Seleção Brasileira",
+    "Jogadores de basquete da NBA", "Esportes praticados na água ou mar", "Times de futebol da Argentina",
+    "Esportes radicais de aventura", "Marcas de carros da Fórmula 1", "Posições dos jogadores em campo",
+    "Lutadores de boxe históricos", "Esportes olímpicos de inverno", "Técnicos de futebol consagrados",
+    "Jogadores brasileiros que jogaram na Europa", "Grandes clássicos do futebol brasileiro (Derbys)"
+  ],
+  brasil: [
+    "Capitais dos estados brasileiros", "Doces e sobremesas típicas brasileiras", "Grandes rios do território brasileiro",
+    "Pratos típicos da culinária brasileira", "Frutas nativas do Brasil", "Ritmos e gêneros musicais brasileiros",
+    "Novelas marcantes da TV Globo", "Cidades turísticas brasileiras", "Grandes personalidades da história do Brasil",
+    "Parques nacionais brasileiros", "Estados da Região Nordeste", "Estados da Região Sul e Sudeste",
+    "Comidas de festa junina", "Ingredientes de uma feijoada completa", "Sabores de pastel de feira",
+    "Presidentes da República do Brasil", "Pontes e monumentos famosos do Brasil", "Gírias populares brasileiras",
+    "Bebidas e drinques típicos do Brasil", "Marcas de produtos alimentícios brasileiros", "Festas populares e folclóricas do Brasil",
+    "Praias famosas do litoral brasileiro", "Times de futebol do interior de SP/RJ", "Aves e animais da fauna brasileira"
+  ],
+  geek: [
+    "Personagens da saga Harry Potter", "Jogos de videogame mais vendidos da história", "Consoles de videogame de todas as épocas",
+    "Pokémons da 1ª Geração (Kanto)", "Super-heróis Marvel ou DC Comics", "Personagens de Star Wars",
+    "Animes e mangás japoneses populares", "Vilões icônicos dos videogames", "Armas ou itens mágicos/épicos da cultura nerd",
+    "Franquias clássicas da Nintendo", "Jogos da franquia Grand Theft Auto (GTA)", "Classes de personagens de RPG (D&D)",
+    "Vilões dos quadrinhos Marvel/DC", "Personagens do universo O Senhor dos Anéis", "Jogos de luta famosos",
+    "Jogos do gênero Battle Royale", "Jogos da franquia Mario ou Zelda", "Habilidades ou poderes de super-heróis",
+    "Cyberpunk e ficção científica clássica", "Empresas ou estúdios criadores de jogos", "Personagens de Naruto ou Dragon Ball",
+    "Personagens de animes shonen clássicos", "Jogos ganhadores do Game of the Year (GOTY)"
+  ],
+  conhecimentos: [
+    "Elementos da tabela periódica", "Países do continente africano", "Países do continente europeu",
+    "Capitais de países das Américas", "Línguas mais faladas no mundo", "Signos do zodíaco ocidental",
+    "Presidentes dos Estados Unidos ou Brasil", "Planetas e luas do Sistema Solar", "Vencedores do Prêmio Nobel",
+    "Grandes invenções tecnológicas da humanidade", "Moedas de diferentes países do mundo", "Sete maravilhas do mundo antigo ou moderno",
+    "Marés, oceanos e mares da Terra", "Camadas da atmosfera ou da Terra", "Órgãos do corpo humano",
+    "Ossos do corpo humano", "Constelações visíveis no céu", "Grandes filósofos da antiguidade",
+    "Formas geométricas ou sólidas", "Teorias e leis físicas/científicas", "Capitais de países da Ásia",
+    "Bandeiras de países com a cor amarela", "Guerra ou batalhas históricas da humanidade"
+  ],
+  variados: [
+    "Frutas comestíveis", "Sabores de sorvete populares", "Sabores de bolo ou recheio de festa",
+    "Cores do arco-íris e matizes", "Animais mamíferos de grande porte", "Marcas de automóveis famosas",
+    "Utensílios e objetos de cozinha", "Profissões e carreiras universitárias", "Marcas de refrigerante ou sucos",
+    "Aplicativos de celular mais baixados", "Marcas famosas de roupas e tênis", "Instrumentos musicais de sopro ou cordas",
+    "Peças e partes de um automóvel", "Marcas de perfumes importados", "Tipos de queijo",
+    "Espécies de flores ou plantas", "Ferramentas de construção e marcenaria", "Acessórios e bijuterias femininas/masculinas",
+    "Materiais escolares e de escritório", "Tipos de calçados", "Ingredientes para fazer uma pizza",
+    "Meios de transporte terrestres ou aéreos", "Brinquedos de infância clássicos", "Objetos que ficam no banheiro"
+  ]
 };
 
 function randomDuvidoCategory(){
-  const g = room.gameData;
+  const g = room ? room.gameData : null;
   const filterCat = (g && g.filterCat) ? g.filterCat : 'todos';
   let pool = [];
   if(filterCat === 'todos' || !CATEGORIES[filterCat]){
@@ -400,11 +494,29 @@ function randomDuvidoCategory(){
     pool = CATEGORIES[filterCat];
   }
   if(!pool || pool.length === 0) pool = Object.values(CATEGORIES).flat();
-  return pool[Math.floor(Math.random() * pool.length)];
+
+  const roomUsed = (g && Array.isArray(g.usedDuvidoCategories)) ? g.usedDuvidoCategories : [];
+
+  let available = pool.filter(c => !roomUsed.includes(c));
+  if(available.length === 0){
+    available = pool;
+    if(g && room) g.usedDuvidoCategories = [];
+  }
+
+  const pick = available[Math.floor(Math.random() * available.length)];
+
+  if(g && room){
+    if(!g.usedDuvidoCategories) g.usedDuvidoCategories = [];
+    if(!g.usedDuvidoCategories.includes(pick)){
+      g.usedDuvidoCategories.push(pick);
+    }
+  }
+
+  return pick;
 }
 
 const CHARACTER_BANK = [
-  // Pop Culture, Cinema, TV & Music (Nacional e Internacional)
+  // Pop Culture, Cinema, TV, Música Internacional & Animações
   { name: "Michael Jackson", cat: "pop" }, { name: "Anitta", cat: "pop" }, { name: "Shrek", cat: "pop" },
   { name: "Freddie Mercury", cat: "pop" }, { name: "Bob Esponja", cat: "pop" }, { name: "Elvis Presley", cat: "pop" },
   { name: "Barbie", cat: "pop" }, { name: "Simba", cat: "pop" }, { name: "Shakira", cat: "pop" },
@@ -416,6 +528,23 @@ const CHARACTER_BANK = [
   { name: "Zendaya", cat: "pop" }, { name: "Billie Eilish", cat: "pop" }, { name: "Snoop Dogg", cat: "pop" },
   { name: "Eminem", cat: "pop" }, { name: "Britney Spears", cat: "pop" }, { name: "Katy Perry", cat: "pop" },
   { name: "The Rock (Dwayne Johnson)", cat: "pop" }, { name: "Johnny Depp", cat: "pop" }, { name: "Brad Pitt", cat: "pop" },
+  { name: "Angelina Jolie", cat: "pop" }, { name: "Jennifer Aniston", cat: "pop" }, { name: "Nicolas Cage", cat: "pop" },
+  { name: "Pedro Pascal", cat: "pop" }, { name: "Jenna Ortega", cat: "pop" }, { name: "Selena Gomez", cat: "pop" },
+  { name: "Bruno Mars", cat: "pop" }, { name: "Ed Sheeran", cat: "pop" }, { name: "Adele", cat: "pop" },
+  { name: "Drake", cat: "pop" }, { name: "Post Malone", cat: "pop" }, { name: "Ariana Grande", cat: "pop" },
+  { name: "Dua Lipa", cat: "pop" }, { name: "Harry Styles", cat: "pop" }, { name: "Miley Cyrus", cat: "pop" },
+  { name: "Bad Bunny", cat: "pop" }, { name: "Travis Scott", cat: "pop" }, { name: "Kendrick Lamar", cat: "pop" },
+  { name: "Bob Marley", cat: "pop" }, { name: "Elton John", cat: "pop" }, { name: "Celine Dion", cat: "pop" },
+  { name: "Mariah Carey", cat: "pop" }, { name: "Whitney Houston", cat: "pop" }, { name: "Cher", cat: "pop" },
+  { name: "Paul McCartney", cat: "pop" }, { name: "Mufasa", cat: "pop" }, { name: "Buzz Lightyear", cat: "pop" },
+  { name: "Procurando Nemo", cat: "pop" }, { name: "Tarzan", cat: "pop" }, { name: "Hércules", cat: "pop" },
+  { name: "Aladdin", cat: "pop" }, { name: "Mulan", cat: "pop" }, { name: "Pocahontas", cat: "pop" },
+  { name: "Olaf (Frozen)", cat: "pop" }, { name: "Gru (Meu Malvado Favorito)", cat: "pop" }, { name: "Minion Stuart", cat: "pop" },
+  { name: "Po (Kung Fu Panda)", cat: "pop" }, { name: "Alex o Leão (Madagascar)", cat: "pop" }, { name: "Banguela (Como Treinar o Seu Dragão)", cat: "pop" },
+  { name: "Patrick Estrela", cat: "pop" }, { name: "Lula Molusco", cat: "pop" }, { name: "Sr. Sirigueijo", cat: "pop" },
+  { name: "Peppa Pig", cat: "pop" }, { name: "Dora a Aventureira", cat: "pop" }, { name: "Moana", cat: "pop" },
+  { name: "Stitch (Lilo & Stitch)", cat: "pop" }, { name: "Lightning McQueen (Carros)", cat: "pop" }, { name: "Wall-E", cat: "pop" },
+  { name: "Ratatouille (Remy)", cat: "pop" }, { name: "Jack Skellington", cat: "pop" }, { name: "Cruella de Vil", cat: "pop" },
 
   // Esportes (Brasil e Mundo)
   { name: "Pelé", cat: "esportes" }, { name: "Cristiano Ronaldo", cat: "esportes" }, { name: "Neymar", cat: "esportes" },
@@ -426,6 +555,20 @@ const CHARACTER_BANK = [
   { name: "Zico", cat: "esportes" }, { name: "Lewis Hamilton", cat: "esportes" }, { name: "Mike Tyson", cat: "esportes" },
   { name: "Muhammad Ali", cat: "esportes" }, { name: "Roger Federer", cat: "esportes" }, { name: "Rafael Nadal", cat: "esportes" },
   { name: "Kobe Bryant", cat: "esportes" }, { name: "Rayssa Leal", cat: "esportes" }, { name: "Anderson Silva", cat: "esportes" },
+  { name: "Stephen Curry", cat: "esportes" }, { name: "Giannis Antetokounmpo", cat: "esportes" }, { name: "Luka Doncic", cat: "esportes" },
+  { name: "Shaquille O'Neal", cat: "esportes" }, { name: "Magic Johnson", cat: "esportes" }, { name: "Tiger Woods", cat: "esportes" },
+  { name: "Michael Phelps", cat: "esportes" }, { name: "Simone Biles", cat: "esportes" }, { name: "Novak Djokovic", cat: "esportes" },
+  { name: "Carlos Alcaraz", cat: "esportes" }, { name: "Max Verstappen", cat: "esportes" }, { name: "Charles Leclerc", cat: "esportes" },
+  { name: "Fernando Alonso", cat: "esportes" }, { name: "Michael Schumacher", cat: "esportes" }, { name: "Romário", cat: "esportes" },
+  { name: "Rivaldo", cat: "esportes" }, { name: "Kaká", cat: "esportes" }, { name: "Vinicius Jr", cat: "esportes" },
+  { name: "Rodrygo", cat: "esportes" }, { name: "Endrick", cat: "esportes" }, { name: "Jude Bellingham", cat: "esportes" },
+  { name: "Erling Haaland", cat: "esportes" }, { name: "Kylian Mbappé", cat: "esportes" }, { name: "Luka Modric", cat: "esportes" },
+  { name: "Zinedine Zidane", cat: "esportes" }, { name: "David Beckham", cat: "esportes" }, { name: "Gianluigi Buffon", cat: "esportes" },
+  { name: "Manuel Neuer", cat: "esportes" }, { name: "Alisson Becker", cat: "esportes" }, { name: "Casemiro", cat: "esportes" },
+  { name: "Marcelo", cat: "esportes" }, { name: "Italo Ferreira", cat: "esportes" }, { name: "Filipe Toledo", cat: "esportes" },
+  { name: "Amanda Nunes", cat: "esportes" }, { name: "Alex Poatan", cat: "esportes" }, { name: "Charles do Bronx", cat: "esportes" },
+  { name: "José Aldo", cat: "esportes" }, { name: "Falcão (Futsal)", cat: "esportes" }, { name: "Bruninho (Vôlei)", cat: "esportes" },
+  { name: "Gabi Guimarães (Vôlei)", cat: "esportes" }, { name: "Hortência", cat: "esportes" }, { name: "Oscar Schmidt", cat: "esportes" },
 
   // Famosos, Apresentadores, Celebridades e História do Brasil
   { name: "Silvio Santos", cat: "brasil" }, { name: "Xuxa", cat: "brasil" }, { name: "Ivete Sangalo", cat: "brasil" },
@@ -438,8 +581,23 @@ const CHARACTER_BANK = [
   { name: "Gal Costa", cat: "brasil" }, { name: "Roberto Carlos", cat: "brasil" }, { name: "Zeca Pagodinho", cat: "brasil" },
   { name: "Sabrina Sato", cat: "brasil" }, { name: "Tatá Werneck", cat: "brasil" }, { name: "Ana Maria Braga", cat: "brasil" },
   { name: "Rita Lee", cat: "brasil" }, { name: "Juliette", cat: "brasil" }, { name: "Chaves", cat: "brasil" },
+  { name: "Luciano Huck", cat: "brasil" }, { name: "Rodrigo Faro", cat: "brasil" }, { name: "Celso Portiolli", cat: "brasil" },
+  { name: "Marcos Mion", cat: "brasil" }, { name: "Serginho Groisman", cat: "brasil" }, { name: "Ratinho", cat: "brasil" },
+  { name: "Galvão Bueno", cat: "brasil" }, { name: "Pedro Bial", cat: "brasil" }, { name: "William Bonner", cat: "brasil" },
+  { name: "Fátima Bernardes", cat: "brasil" }, { name: "Alok", cat: "brasil" }, { name: "Gusttavo Lima", cat: "brasil" },
+  { name: "Marília Mendonça", cat: "brasil" }, { name: "Jorge & Mateus", cat: "brasil" }, { name: "Zezé Di Camargo", cat: "brasil" },
+  { name: "Chitãozinho", cat: "brasil" }, { name: "Thiaguinho", cat: "brasil" }, { name: "Péricles", cat: "brasil" },
+  { name: "Ludmilla", cat: "brasil" }, { name: "Luísa Sonza", cat: "brasil" }, { name: "Gloria Groove", cat: "brasil" },
+  { name: "Jão", cat: "brasil" }, { name: "Djavan", cat: "brasil" }, { name: "Tim Maia", cat: "brasil" },
+  { name: "Raul Seixas", cat: "brasil" }, { name: "Renato Russo", cat: "brasil" }, { name: "Cazuza", cat: "brasil" },
+  { name: "Elis Regina", cat: "brasil" }, { name: "Maria Bethânia", cat: "brasil" }, { name: "Tiririca", cat: "brasil" },
+  { name: "Tom Cavalcante", cat: "brasil" }, { name: "Felipe Neto", cat: "brasil" }, { name: "Luccas Neto", cat: "brasil" },
+  { name: "Lampião", cat: "brasil" }, { name: "Maria Bonita", cat: "brasil" }, { name: "Getúlio Vargas", cat: "brasil" },
+  { name: "Princesa Isabel", cat: "brasil" }, { name: "Tiradentes", cat: "brasil" }, { name: "Juscelino Kubitschek", cat: "brasil" },
+  { name: "Oscar Niemeyer", cat: "brasil" }, { name: "Monteiro Lobato", cat: "brasil" }, { name: "Mônica (Turma da Mônica)", cat: "brasil" },
+  { name: "Cebolinha", cat: "brasil" }, { name: "Cascão", cat: "brasil" }, { name: "Magali", cat: "brasil" },
 
-  // Geek, Super-heróis, Animes, Games e Desenhos
+  // Geek, Super-heróis, Animes, Games e Quadrinhos
   { name: "Batman", cat: "geek" }, { name: "Homer Simpson", cat: "geek" }, { name: "Harry Potter", cat: "geek" },
   { name: "Mulher-Maravilha", cat: "geek" }, { name: "Darth Vader", cat: "geek" }, { name: "Hulk", cat: "geek" },
   { name: "Homem-Aranha", cat: "geek" }, { name: "Pikachu", cat: "geek" }, { name: "Yoda", cat: "geek" },
@@ -449,8 +607,25 @@ const CHARACTER_BANK = [
   { name: "Lara Croft", cat: "geek" }, { name: "Link (Zelda)", cat: "geek" }, { name: "Luffy (One Piece)", cat: "geek" },
   { name: "Wolverine", cat: "geek" }, { name: "Capitão América", cat: "geek" }, { name: "Thor", cat: "geek" },
   { name: "Thanos", cat: "geek" }, { name: "Deadpool", cat: "geek" }, { name: "Pantera Negra", cat: "geek" },
-  { name: "Dumbledore", cat: "geek" }, { name: "Buzz Lightyear", cat: "geek" }, { name: "Scooby-Doo", cat: "geek" },
-  { name: "Pica-Pau", cat: "geek" }, { name: "Pernalonga", cat: "geek" },
+  { name: "Dumbledore", cat: "geek" }, { name: "Scooby-Doo", cat: "geek" }, { name: "Pica-Pau", cat: "geek" },
+  { name: "Pernalonga", cat: "geek" }, { name: "Doutor Estranho", cat: "geek" }, { name: "Feiticeira Escarlate", cat: "geek" },
+  { name: "Loki", cat: "geek" }, { name: "Groot", cat: "geek" }, { name: "Rocket Raccoon", cat: "geek" },
+  { name: "Flash", cat: "geek" }, { name: "Superman", cat: "geek" }, { name: "Aquaman", cat: "geek" },
+  { name: "Shazam", cat: "geek" }, { name: "Robin", cat: "geek" }, { name: "Ravena (Jovens Titãs)", cat: "geek" },
+  { name: "Arlequina", cat: "geek" }, { name: "Voldemort", cat: "geek" }, { name: "Hermione Granger", cat: "geek" },
+  { name: "Ron Weasley", cat: "geek" }, { name: "Severo Snape", cat: "geek" }, { name: "Hagrid", cat: "geek" },
+  { name: "Gollum", cat: "geek" }, { name: "Legolas", cat: "geek" }, { name: "Aragorn", cat: "geek" },
+  { name: "Luke Skywalker", cat: "geek" }, { name: "Princesa Leia", cat: "geek" }, { name: "Han Solo", cat: "geek" },
+  { name: "Chewbacca", cat: "geek" }, { name: "Obi-Wan Kenobi", cat: "geek" }, { name: "The Mandalorian", cat: "geek" },
+  { name: "Baby Yoda (Grogu)", cat: "geek" }, { name: "Luigi", cat: "geek" }, { name: "Princesa Peach", cat: "geek" },
+  { name: "Bowser", cat: "geek" }, { name: "Yoshi", cat: "geek" }, { name: "Donkey Kong", cat: "geek" },
+  { name: "Steve (Minecraft)", cat: "geek" }, { name: "Ryu (Street Fighter)", cat: "geek" }, { name: "Chun-Li", cat: "geek" },
+  { name: "Sub-Zero", cat: "geek" }, { name: "Scorpion", cat: "geek" }, { name: "Charizard", cat: "geek" },
+  { name: "Mewtwo", cat: "geek" }, { name: "Ash Ketchum", cat: "geek" }, { name: "Satoru Gojo", cat: "geek" },
+  { name: "Saitama (One Punch Man)", cat: "geek" }, { name: "Eren Yeager", cat: "geek" }, { name: "Levi Ackerman", cat: "geek" },
+  { name: "Tanjiro (Demon Slayer)", cat: "geek" }, { name: "Nezuko", cat: "geek" }, { name: "Sailor Moon", cat: "geek" },
+  { name: "Seiya de Pégaso", cat: "geek" }, { name: "Vegeta", cat: "geek" }, { name: "Sasuke Uchiha", cat: "geek" },
+  { name: "Kakashi Hatake", cat: "geek" }, { name: "Zoro (One Piece)", cat: "geek" }, { name: "Nami (One Piece)", cat: "geek" },
 
   // Figuras Históricas, Ciência, Arte e Conhecimentos Gerais
   { name: "Cleópatra", cat: "conhecimentos" }, { name: "Napoleão Bonaparte", cat: "conhecimentos" }, { name: "Albert Einstein", cat: "conhecimentos" },
@@ -462,10 +637,20 @@ const CHARACTER_BANK = [
   { name: "Mozart", cat: "conhecimentos" }, { name: "Beethoven", cat: "conhecimentos" }, { name: "Vincent van Gogh", cat: "conhecimentos" },
   { name: "Pablo Picasso", cat: "conhecimentos" }, { name: "Mahatma Gandhi", cat: "conhecimentos" }, { name: "Nelson Mandela", cat: "conhecimentos" },
   { name: "Júlio César", cat: "conhecimentos" }, { name: "Alexandre o Grande", cat: "conhecimentos" }, { name: "Sócrates", cat: "conhecimentos" },
-  { name: "Neil Armstrong", cat: "conhecimentos" }, { name: "Bill Gates", cat: "conhecimentos" }, { name: "Mark Zuckerberg", cat: "conhecimentos" }
+  { name: "Neil Armstrong", cat: "conhecimentos" }, { name: "Bill Gates", cat: "conhecimentos" }, { name: "Mark Zuckerberg", cat: "conhecimentos" },
+  { name: "Elon Musk", cat: "conhecimentos" }, { name: "Galileu Galilei", cat: "conhecimentos" }, { name: "Charles Darwin", cat: "conhecimentos" },
+  { name: "Sigmund Freud", cat: "conhecimentos" }, { name: "Friedrich Nietzsche", cat: "conhecimentos" }, { name: "Platão", cat: "conhecimentos" },
+  { name: "Aristóteles", cat: "conhecimentos" }, { name: "Pitágoras", cat: "conhecimentos" }, { name: "Arquimedes", cat: "conhecimentos" },
+  { name: "Cristóvão Colombo", cat: "conhecimentos" }, { name: "Marco Polo", cat: "conhecimentos" }, { name: "Vasco da Gama", cat: "conhecimentos" },
+  { name: "Pedro Álvares Cabral", cat: "conhecimentos" }, { name: "Abraham Lincoln", cat: "conhecimentos" }, { name: "George Washington", cat: "conhecimentos" },
+  { name: "Winston Churchill", cat: "conhecimentos" }, { name: "Joana d'Arc", cat: "conhecimentos" }, { name: "Anne Frank", cat: "conhecimentos" },
+  { name: "Madre Teresa de Calcutá", cat: "conhecimentos" }, { name: "Malala Yousafzai", cat: "conhecimentos" }, { name: "Rosa Parks", cat: "conhecimentos" },
+  { name: "Walt Disney", cat: "conhecimentos" }, { name: "Thomas Edison", cat: "conhecimentos" }, { name: "Alexander Graham Bell", cat: "conhecimentos" },
+  { name: "Salvador Dalí", cat: "conhecimentos" }, { name: "Michelangelo", cat: "conhecimentos" }, { name: "Claude Monet", cat: "conhecimentos" },
+  { name: "John Lennon", cat: "conhecimentos" }, { name: "Bob Dylan", cat: "conhecimentos" }
 ];
 
-function randomQuemSouCharacter(){
+function randomQuemSouCharacter(usedInRound = []){
   const g = room ? room.gameData : null;
   const filterCat = (g && g.filterCat) ? g.filterCat : 'todos';
   let pool = CHARACTER_BANK;
@@ -474,19 +659,34 @@ function randomQuemSouCharacter(){
     if(filtered.length > 0) pool = filtered;
   }
   if(!pool || pool.length === 0) pool = CHARACTER_BANK;
-  const pick = pool[Math.floor(Math.random() * pool.length)];
-  if (typeof pick === 'object' && pick !== null) {
-    return pick.name || String(pick);
+
+  const roomUsed = (g && Array.isArray(g.usedCharacters)) ? g.usedCharacters : [];
+
+  let available = pool.filter(c => !roomUsed.includes(c.name) && !usedInRound.includes(c.name));
+  if(available.length === 0){
+    available = pool.filter(c => !usedInRound.includes(c.name));
+    if(g && room) g.usedCharacters = [];
   }
-  return String(pick || 'Personagem Misterioso');
+  if(available.length === 0) available = pool;
+
+  const pick = available[Math.floor(Math.random() * available.length)];
+  const name = (typeof pick === 'object' && pick !== null) ? (pick.name || String(pick)) : String(pick || 'Personagem Misterioso');
+
+  if(g && room){
+    if(!g.usedCharacters) g.usedCharacters = [];
+    if(!g.usedCharacters.includes(name)){
+      g.usedCharacters.push(name);
+    }
+  }
+  return name;
 }
 
-function getTwoRandomQuemSouCharacters(){
-  let charA = randomQuemSouCharacter();
-  let charB = randomQuemSouCharacter();
+function getTwoRandomQuemSouCharacters(usedInRound = []){
+  let charA = randomQuemSouCharacter(usedInRound);
+  let charB = randomQuemSouCharacter([...usedInRound, charA]);
   let attempts = 0;
-  while(charA === charB && attempts < 10){
-    charB = randomQuemSouCharacter();
+  while(charA === charB && attempts < 15){
+    charB = randomQuemSouCharacter([...usedInRound, charA]);
     attempts++;
   }
   return { charA, charB };
@@ -556,13 +756,22 @@ const TOP10_THEMES = [
   { theme:"Países com mais medalhas de ouro nas Olimpíadas de Verão", cat:"esportes", answers:["Estados Unidos","União Soviética","Grã-Bretanha","China","Alemanha","França","Itália","Austrália","Hungria","Japão"] },
   { theme:"Maiores artilheiros da história da Copa do Mundo", cat:"esportes", answers:["Miroslav Klose","Ronaldo Fenômeno","Gerd Müller","Just Fontaine","Pelé","Kylian Mbappé","Sándor Kocsis","Lionel Messi","Jürgen Klinsmann","Helmut Rahn"] },
   { theme:"Pilotos com mais títulos na História da Fórmula 1", cat:"esportes", answers:["Lewis Hamilton","Michael Schumacher","Juan Manuel Fangio","Alain Prost","Sebastian Vettel","Max Verstappen","Ayrton Senna","Nelson Piquet","Niki Lauda","Jackie Stewart"] },
+  { theme:"Pilotos com mais vitórias na história da Fórmula 1", cat:"esportes", answers:["Lewis Hamilton","Michael Schumacher","Max Verstappen","Sebastian Vettel","Alain Prost","Ayrton Senna","Fernando Alonso","Nigel Mansell","Jackie Stewart","Jim Clark"] },
+  { theme:"Seleções campeãs da Copa do Mundo FIFA", cat:"esportes", answers:["Brasil","Alemanha","Itália","Argentina","França","Uruguai","Inglaterra","Espanha"] },
+  { theme:"Maiores artilheiros da Seleção Brasileira em jogos oficiais", cat:"esportes", answers:["Neymar","Pelé","Ronaldo Fenômeno","Romário","Zico","Jairzinho","Rivaldo","Bebeto","Leônidas da Silva","Tostão"] },
+  { theme:"Maiores cestinhas da história da NBA (pontuação total)", cat:"esportes", answers:["LeBron James","Kareem Abdul-Jabbar","Karl Malone","Kobe Bryant","Michael Jordan","Dirk Nowitzki","Wilt Chamberlain","Kevin Durant","Shaquille O'Neal","Carmelo Anthony"] },
 
   // pop
-  { theme:"Filmes com maior bilheteria mundial de todos os tempos", cat:"pop", answers:["Avatar","Vingadores: Ultimato","Avatar: O Caminho da Água","Titanic","Ne Zha 2","Star Wars: O Despertar da Força","Vingadores: Guerra Infinita","Homem-Aranha: Sem Volta Para Casa","Zootopia 2","Divertida Mente 2"] },
-  { theme:"Filmes de animação com maior bilheteria", cat:"pop", answers:["Divertida Mente 2","Rei Leão (2019)","Frozen II","Super Mario Bros","Frozen","Os Incríveis 2","Minions","Toy Story 4","Toy Story 3","Despicable Me 3"] },
-  { theme:"Séries mais assistidas da Netflix em todos os tempos", cat:"pop", answers:["Round 6 (Squid Game)","Wandinha (Wednesday)","Stranger Things (Temp 4)","Dahmer","La Casa de Papel (Parte 5)","Bridgerton (Temp 1)","O Gambito da Rainha","The Witcher","O Agente Noturno","Fool Me Once"] },
+  { theme:"Filmes com maior bilheteria mundial de todos os tempos", cat:"pop", answers:["Avatar","Vingadores: Ultimato","Avatar: O Caminho da Água","Titanic","Star Wars: O Despertar da Força","Vingadores: Guerra Infinita","Homem-Aranha: Sem Volta Para Casa","Divertida Mente 2","Rei Leão (2019)","Jurassic World"] },
+  { theme:"Filmes de animação com maior bilheteria", cat:"pop", answers:["Divertida Mente 2","Rei Leão (2019)","Frozen II","Super Mario Bros","Frozen","Os Incríveis 2","Minions","Toy Story 4","Toy Story 3","Meu Malvado Favorito 3"] },
+  { theme:"Séries mais assistidas da Netflix em todos os tempos", cat:"pop", answers:["Round 6 (Squid Game)","Wandinha (Wednesday)","Stranger Things","Dahmer","La Casa de Papel","Bridgerton","O Gambito da Rainha","The Witcher","O Agente Noturno","Fool Me Once"] },
   { theme:"Atores com mais indicações ao Oscar de Melhor Ator", cat:"pop", answers:["Jack Nicholson","Laurence Olivier","Spencer Tracy","Paul Newman","Marlon Brando","Dustin Hoffman","Peter O'Toole","Al Pacino","Daniel Day-Lewis","Denzel Washington"] },
-  { theme:"Franquias de cinema mais lucrativas da história", cat:"pop", answers:["Universo Cinematográfico Marvel","Star Wars","Harry Potter","James Bond (007)","Vingadores","Homem-Aranha","Fast & Furious (Velozes e Furiosos)","Batman","Jurassic Park","X-Men"] },
+  { theme:"Franquias de cinema mais lucrativas da história", cat:"pop", answers:["Universo Cinematográfico Marvel","Star Wars","Harry Potter","James Bond (007)","Vingadores","Homem-Aranha","Velozes e Furiosos","Batman","Jurassic Park","X-Men"] },
+  { theme:"Artistas com mais prêmios Grammy na história", cat:"pop", answers:["Beyoncé","Georg Solti","Quincy Jones","Alison Krauss","Stevie Wonder","John Williams","Taylor Swift","Jay-Z","Kanye West","Chick Corea"] },
+  { theme:"Bandas de rock que mais venderam discos na história", cat:"pop", answers:["The Beatles","Queen","Led Zeppelin","Pink Floyd","AC/DC","The Rolling Stones","U2","Guns N' Roses","Metallica","Nirvana"] },
+  { theme:"Desenhos e animações mais duradouros da TV americana", cat:"pop", answers:["Os Simpsons","South Park","Uma Família da Pesada (Family Guy)","Bob Esponja","Arthur","Pokémon","Uma Robô Adolescente","Os Padrinhos Mágicos","King of the Hill","Futurama"] },
+  { theme:"Atores e atrizes com mais estatuetas do Oscar de Atuação", cat:"pop", answers:["Katharine Hepburn","Meryl Streep","Jack Nicholson","Daniel Day-Lewis","Ingrid Bergman","Frances McDormand","Walter Brennan","Robert De Niro","Denzel Washington","Cate Blanchett"] },
+  { theme:"Vídeos musicais mais vistos do YouTube de todos os tempos", cat:"pop", answers:["Baby Shark Dance","Despacito","Johny Johny Yes Papa","Bath Song","Shape of You","See You Again","Wheels on the Bus","Phonics Song with Two Words","Uptown Funk","Gangnam Style"] },
 
   // brasil
   { theme:"Estados brasileiros mais populosos", cat:"brasil", answers:["São Paulo","Minas Gerais","Rio de Janeiro","Bahia","Paraná","Rio Grande do Sul","Pernambuco","Ceará","Pará","Santa Catarina"] },
@@ -570,37 +779,77 @@ const TOP10_THEMES = [
   { theme:"Estados brasileiros com maior área territorial", cat:"brasil", answers:["Amazonas","Pará","Mato Grosso","Minas Gerais","Bahia","Mato Grosso do Sul","Goiás","Maranhão","Rio Grande do Sul","Tocantins"] },
   { theme:"Maiores produtores de café do mundo", cat:"brasil", answers:["Brasil","Vietnã","Colômbia","Indonésia","Etiópia","Honduras","Índia","Uganda","Guatemala","Peru"] },
   { theme:"Capitais brasileiras com maior número de habitantes", cat:"brasil", answers:["São Paulo","Rio de Janeiro","Brasília","Salvador","Fortaleza","Belo Horizonte","Manaus","Curitiba","Goiânia","Recife"] },
+  { theme:"Pratos e comidas típicas brasileiras mais famosas", cat:"brasil", answers:["Feijoada","Pão de Queijo","Brigadeiro","Coxinha","Moqueca","Acarajé","Tapioca","Churrasco","Pastel de Feira","Pudim de Leite"] },
+  { theme:"Músicas brasileiras mais tocadas e gravadas no mundo", cat:"brasil", answers:["Garota de Ipanema","Aquarela do Brasil","Mas Que Nada","Carinhoso","Manhã de Carnaval","Tico-Tico no Fubá","Chega de Saudade","Águas de Março","Asas da Alva","Detalhes"] },
+  { theme:"Novelas de maior audiência da história da TV Globo", cat:"brasil", answers:["Roque Santeiro","Tieta","Vale Tudo","O Salvador da Pátria","Rainha da Sucata","Renascer","O Rei do Gado","Senhora do Destino","Avenida Brasil","Laços de Família"] },
+  { theme:"Parques nacionais mais visitados do Brasil", cat:"brasil", answers:["Parque Nacional da Tijuca (RJ)","Parque Nacional do Iguaçu (PR)","Parque Nacional de Jericoacoara (CE)","Parque Nacional da Serra dos Órgãos (RJ)","Parque Nacional dos Lençóis Maranhenses (MA)","Parque Nacional da Chapada dos Veadeiros (GO)","Parque Nacional da Chapada Diamantina (BA)","Parque Nacional de Itatiaia (RJ)","Parque Nacional marinho de Fernando de Noronha (PE)","Parque Nacional da Serra da Canastra (MG)"] },
+  { theme:"Gêneros musicais genuinamente nascidos no Brasil", cat:"brasil", answers:["Samba","Bossa Nova","Forró","Choro","Sertanejo","Axé","Funk Carioca","Frevo","Maracatu","Pagode"] },
 
   // geek
   { theme:"Jogos de videogame mais vendidos de todos os tempos", cat:"geek", answers:["Minecraft","Grand Theft Auto V","Tetris (EA)","Wii Sports","PUBG","Mario Kart 8 / Deluxe","Super Mario Bros.","Red Dead Redemption 2","The Witcher 3","Pokémon Red/Green/Blue"] },
   { theme:"Consoles de videogame mais vendidos da história", cat:"geek", answers:["PlayStation 2","Nintendo DS","Nintendo Switch","Game Boy / Game Boy Color","PlayStation 4","PlayStation","Wii","PlayStation 3","Xbox 360","Game Boy Advance"] },
   { theme:"Super-heróis mais populares da DC Comics", cat:"geek", answers:["Batman","Superman","Mulher-Maravilha","Flash","Coringa","Aquaman","Lanterna Verde","Robin","Arqueiro Verde","Shazam"] },
   { theme:"Super-heróis com maior número de aparições nos cinemas Marvel", cat:"geek", answers:["Homem de Ferro","Capitão América","Thor","Hulk","Viúva Negra","Gavião Arqueiro","Homem-Aranha","Doutor Estranho","Homem-Formiga","Pantera Negra"] },
+  { theme:"Animes e Mangás mais vendidos da história", cat:"geek", answers:["One Piece","Golgo 13","Detetive Conan","Dragon Ball","Doraemon","Naruto","Slam Dunk","Demon Slayer (Kimetsu no Yaiba)","KochiKame","Attack on Titan"] },
+  { theme:"Vilões mais icônicos dos quadrinhos e da ficção", cat:"geek", answers:["Coringa","Darth Vader","Thanos","Voldemort","Duende Verde","Lex Luthor","Magneto","Loki","Sauron","Hannibal Lecter"] },
+  { theme:"Franquias de videogame mais valiosas da história", cat:"geek", answers:["Pokémon","Mario","Call of Duty","Wii Sports / Mario Kart","Grand Theft Auto","Final Fantasy","Tetris","FIFA / EA Sports FC","Minecraft","Assassin's Creed"] },
+  { theme:"Personagens da saga Harry Potter mais famosos", cat:"geek", answers:["Harry Potter","Hermione Granger","Ron Weasley","Alvo Dumbledore","Severo Snape","Lord Voldemort","Rúbeo Hagrid","Sirius Black","Draco Malfoy","Dobby"] },
+  { theme:"Vencedores do prêmio Jogo do Ano (GOTY) no The Game Awards", cat:"geek", answers:["The Witcher 3","Overwatch","The Legend of Zelda: Breath of the Wild","God of War (2018)","Sekiro: Shadows Die Twice","The Last of Us Part II","It Takes Two","Elden Ring","Baldur's Gate 3","Astro Bot"] },
+  { theme:"Pokémons mais famosos da 1ª Geração (Kanto)", cat:"geek", answers:["Pikachu","Charizard","Mewtwo","Bulbasaur","Squirtle","Eevee","Gengar","Snorlax","Gyarados","Mew"] },
 
   // conhecimentos
   { theme:"Países mais populosos do mundo", cat:"conhecimentos", answers:["Índia","China","Estados Unidos","Indonésia","Paquistão","Nigéria","Brasil","Bangladesh","Rússia","México"] },
-  { theme:"Maiores países do mundo em área", cat:"conhecimentos", answers:["Rússia","Canadá","China","Estados Unidos","Brasil","Austrália","Índia","Argentina","Cazaquistão","Argélia"] },
+  { theme:"Maiores países do mundo em área territorial", cat:"conhecimentos", answers:["Rússia","Canadá","China","Estados Unidos","Brasil","Austrália","Índia","Argentina","Cazaquistão","Argélia"] },
   { theme:"Rios mais longos do mundo", cat:"conhecimentos", answers:["Nilo","Amazonas","Yangtzé","Mississippi-Missouri","Yenissei","Rio Amarelo (Huang He)","Obi-Irtysh","Rio da Prata-Paraná","Congo","Amur"] },
-  { theme:"Montanhas mais altas do mundo", cat:"conhecimentos", answers:["Everest","K2","Kangchenjunga","Lhotse","Makalu","Cho Oyu","Dhaulagiri","Manaslu","Nanga Parbat","Annapurna"] },
-  { theme:"Idiomas mais falados no mundo (por número total de falantes)", cat:"conhecimentos", answers:["Inglês","Mandarim (Chinês)","Hindi","Espanhol","Francês","Árabe","Bengali","Russo","Português","Urdu"] },
+  { theme:"Montanhas mais altas do mundo em altitude", cat:"conhecimentos", answers:["Everest","K2","Kangchenjunga","Lhotse","Makalu","Cho Oyu","Dhaulagiri","Manaslu","Nanga Parbat","Annapurna"] },
+  { theme:"Idiomas mais falados no mundo (total de falantes)", cat:"conhecimentos", answers:["Inglês","Mandarim (Chinês)","Hindi","Espanhol","Francês","Árabe","Bengali","Russo","Português","Urdu"] },
   { theme:"Planetas do Sistema Solar ordenados por tamanho", cat:"conhecimentos", answers:["Júpiter","Saturno","Urano","Netuno","Terra","Vênus","Marte","Mercúrio"] },
+  { theme:"Maiores oceanos e mares da Terra por superfície", cat:"conhecimentos", answers:["Oceano Pacífico","Oceano Atlântico","Oceano Índico","Oceano Antártico","Oceano Ártico","Mar do Caribe","Mar Mediterrâneo","Mar de Bering","Golfo do México","Mar Vermelho"] },
+  { theme:"Elementos químicos mais abundantes no universo", cat:"conhecimentos", answers:["Hidrogênio","Hélio","Oxigênio","Carbono","Neônio","Ferro","Nitrogênio","Silício","Magnésio","Enxofre"] },
+  { theme:"Países com maior PIB (Produto Interno Bruto) do planeta", cat:"conhecimentos", answers:["Estados Unidos","China","Alemanha","Japão","Índia","Reino Unido","França","Brasil","Itália","Canadá"] },
+  { theme:"Maiores desertos do mundo por extensão", cat:"conhecimentos", answers:["Antártida (Deserto Polar)","Ártico (Deserto Polar)","Saara","Deserto da Arábia","Gobi","Kalahari","Patagônia","Grande Deserto de Vitória","Deserto do Sírio","Deserto de Atacama"] },
 
   // variados
-  { theme:"Animais terrestres mais rápidos do mundo", cat:"variados", answers:["Guepardo","Antílope-pronghorn","Springbok (gazela-saltadora)","Gnu","Leão","Cavalo selvagem","Coiote","Hiena","Zebra","Canguru-vermelho"] },
+  { theme:"Animais terrestres mais rápidos do mundo", cat:"variados", answers:["Guepardo","Antílope-pronghorn","Springbok","Gnu","Leão","Cavalo selvagem","Coiote","Hiena","Zebra","Canguru-vermelho"] },
   { theme:"Marcas de carros mais vendidas no mundo", cat:"variados", answers:["Toyota","Volkswagen","Ford","Hyundai","Honda","Chevrolet","Nissan","Kia","BMW","Mercedes-Benz"] },
-  { theme:"Frutas mais consumidas e produzidas no mundo", cat:"variados", answers:["Banana","Maçã","Uva","Laranja","Melancia","Manga","Abacaxi","Morango","Pêssego","Mamão"] }
+  { theme:"Frutas mais consumidas e produzidas no mundo", cat:"variados", answers:["Banana","Maçã","Uva","Laranja","Melancia","Manga","Abacaxi","Morango","Pêssego","Mamão"] },
+  { theme:"Redes sociais com maior número de usuários ativos", cat:"variados", answers:["Facebook","YouTube","WhatsApp","Instagram","TikTok","WeChat","Telegram","Snapchat","X (Twitter)","Pinterest"] },
+  { theme:"Raças de cães mais populares no Brasil", cat:"variados", answers:["Vira-lata (SRD)","Shih Tzu","Yorkshire Terrier","Poodle","Bulldog Francês","Golden Retriever","Labrador","Lhasa Apso","Pug","Rottweiler"] },
+  { theme:"Sobremesas e doces mais pedidos em restaurantes", cat:"variados", answers:["Pudim de Leite","Petit Gâteau","Torta de Limão","Brownie","Cheesecake","Mousse de Chocolate","Pavê","Tiramisu","Açaí na Tigela","Sorvete de Baunilha"] },
+  { theme:"Sabores de pizza mais pedidos no Brasil", cat:"variados", answers:["Calabresa","Mussarela","Frango com Catupiry","Portuguesa","Marguerita","Quatro Queijos","Atum","Bacon","Chocolate / Prestígio","Lombo com Catupiry"] },
+  { theme:"Marcas de refrigerante mais vendidas no mundo", cat:"variados", answers:["Coca-Cola","Diet Coke / Coke Zero","Pepsi","Sprite","Fanta","7 Up","Dr Pepper","Mountain Dew","Mirinda","Guaraná Antarctica"] },
+  { theme:"Animais vertebrados com maior expectativa de vida", cat:"variados", answers:["Tubarão da Groenlândia","Baleia-da-Groenlândia","Tartaruga-gigante","Carpa","Elefante","Lhama","Papagaio","Crocodilo","Gorila","Camelo"] },
+  { theme:"Monumentos e atrações turísticas mais visitadas no mundo", cat:"variados", answers:["Torre Eiffel (França)","Coliseu (Itália)","Estátua da Liberdade (EUA)","Taj Mahal (Índia)","Muralha da China","Cristo Redentor (Brasil)","Machu Picchu (Peru)","Pirâmides de Gizé (Egito)","Big Ben (Inglaterra)","Sagrada Família (Espanha)"] }
 ];
 
 function randomTop10Theme(){
-  const g = room.gameData;
+  const g = room ? room.gameData : null;
   const filterCat = (g && g.filterCat) ? g.filterCat : 'todos';
   let pool = TOP10_THEMES;
   if(filterCat !== 'todos'){
     const filtered = TOP10_THEMES.filter(t => t.cat === filterCat);
     if(filtered.length > 0) pool = filtered;
   }
-  const idx = Math.floor(Math.random() * pool.length);
-  return pool[idx];
+  if(!pool || pool.length === 0) pool = TOP10_THEMES;
+
+  const roomUsed = (g && Array.isArray(g.usedTop10Themes)) ? g.usedTop10Themes : [];
+
+  let available = pool.filter(t => !roomUsed.includes(t.theme));
+  if(available.length === 0){
+    available = pool;
+    if(g && room) g.usedTop10Themes = [];
+  }
+
+  const pick = available[Math.floor(Math.random() * available.length)];
+
+  if(g && room){
+    if(!g.usedTop10Themes) g.usedTop10Themes = [];
+    if(!g.usedTop10Themes.includes(pick.theme)){
+      g.usedTop10Themes.push(pick.theme);
+    }
+  }
+
+  return pick;
 }
 
 const QUIZ_SUGGESTIONS = [
@@ -870,7 +1119,7 @@ async function goToMenu(){ await updateRoom(r=>{ r.phase='menu'; r.activeGame=nu
 /* ---------- menu ---------- */
 const GAMES = [
   { id:'top', emoji:'🤔', name:'Mais Provável', desc:'Vote em quem faria isso' },
-  { id:'quemsou', emoji:'🕵️', name:'Quem Sou Eu', desc:'1 de cada time tenta adivinhar' },
+  { id:'quemsou', emoji:'🕵️', name:'Quem Sou Eu', desc:'Em times ou individual: descubra quem você é!' },
   { id:'duvido', emoji:'🤥', name:'Duvido', desc:'Aposte e cronometre' },
   { id:'impostor', emoji:'🎭', name:'Impostor', desc:'Descubra quem não sabe a palavra' },
   { id:'top10', emoji:'📋', name:'Top 10', desc:'Um lê, o resto joga e duvida' },
@@ -936,7 +1185,7 @@ async function startGame(gameId){
           if (teamA.length <= teamB.length) teamA.push(pid); else teamB.push(pid);
         }
       });
-      r.gameData = { stage:'teams', filterCat, teamA, teamB, turnIdxA:0, turnIdxB:0, playerAId:null, playerBId:null, characterA:null, characterB:null };
+      r.gameData = { stage:'teams', mode:'teams', filterCat, teamA, teamB, turnIdxA:0, turnIdxB:0, playerAId:null, playerBId:null, characterA:null, characterB:null, individualChars:{} };
     } else if(gameId==='duvido'){
       let teamA = (r.gameData && r.gameData.teamA && r.gameData.teamA.length > 0) ? [...r.gameData.teamA] : [];
       let teamB = (r.gameData && r.gameData.teamB && r.gameData.teamB.length > 0) ? [...r.gameData.teamB] : [];
@@ -1059,15 +1308,17 @@ async function nextTopRound(){
 /* ---------- Quem Sou Eu ---------- */
 function quemsouScreen(){
   const g = room ? room.gameData : null;
-  if(!g || g.stage==='teams') return quemsouTeamsScreen();
+  if(!g || g.stage==='teams' || g.stage==='setup') return quemsouSetupScreen();
   if(g.stage==='play') return quemsouPlayScreen();
   if(g.stage==='reveal') return quemsouRevealScreen();
-  return quemsouTeamsScreen();
+  return quemsouSetupScreen();
 }
 
-function quemsouTeamsScreen(){
+function quemsouSetupScreen(){
   const g = (room && room.gameData) ? room.gameData : {};
   const host = isHost();
+  const mode = g.mode || 'teams';
+
   if(!g.teamA) g.teamA = [];
   if(!g.teamB) g.teamB = [];
 
@@ -1085,18 +1336,47 @@ function quemsouTeamsScreen(){
   const teamB = g.teamB;
 
   return `
-    <p class="sub">Monte dois times. Em cada rodada, <strong>1 pessoa de cada time NÃO saberá qual é o personagem secreto</strong>, enquanto todos os outros saberão!</p>
-    ${renderCategoryFilterHTML(g.filterCat)}
-    <div class="chip-row mb">
-      ${room.players.map(p=>{
-        const cls = teamA.includes(p.id) ? 'teamA' : teamB.includes(p.id) ? 'teamB' : '';
-        return `<div class="pick-chip ${cls}" ${host?`onclick="cycleQuemSouTeam('${p.id}')"`:''}>${esc(p.name)}</div>`;
-      }).join('')}
+    <div class="mode-selector mb center" style="display:flex; justify-content:center; gap:.5rem; margin-bottom:1rem;">
+      <button class="btn btn-sm ${mode==='teams'?'btn-primary':'btn-outline'}" ${host?`onclick="setQuemSouMode('teams')"`:''}>👥 Em Times</button>
+      <button class="btn btn-sm ${mode==='individual'?'btn-primary':'btn-outline'}" ${host?`onclick="setQuemSouMode('individual')"`:''}>👤 Individual (Todos Jogam)</button>
     </div>
-    <div class="team-col"><h4>Time 1 (${teamA.length})</h4>${teamA.map(id=>esc((room.players.find(p=>p.id===id)||{}).name||'')).join(', ') || 'vazio'}</div>
-    <div class="team-col"><h4>Time 2 (${teamB.length})</h4>${teamB.map(id=>esc((room.players.find(p=>p.id===id)||{}).name||'')).join(', ') || 'vazio'}</div>
-    ${host ? `<button class="btn btn-primary" ${(teamA.length<1||teamB.length<1)?'disabled':''} onclick="startQuemSouBattle()">Começar Quem Sou Eu</button>` : `<div class="banner center" style="margin-top:1rem;"><strong>Times organizados!</strong><br><span class="hint">Esperando o anfitrião(a) iniciar a partida...</span></div>`}
+
+    ${mode==='teams' ? `
+      <p class="sub center">Monte dois times. Em cada rodada, <strong>1 pessoa de cada time NÃO saberá qual é o personagem secreto</strong>, enquanto todos os outros saberão!</p>
+      ${renderCategoryFilterHTML(g.filterCat)}
+      <div class="chip-row mb">
+        ${room.players.map(p=>{
+          const cls = teamA.includes(p.id) ? 'teamA' : teamB.includes(p.id) ? 'teamB' : '';
+          return `<div class="pick-chip ${cls}" ${host?`onclick="cycleQuemSouTeam('${p.id}')"`:''}>${esc(p.name)}</div>`;
+        }).join('')}
+      </div>
+      <div class="team-col"><h4>Time 1 (${teamA.length})</h4>${teamA.map(id=>esc((room.players.find(p=>p.id===id)||{}).name||'')).join(', ') || 'vazio'}</div>
+      <div class="team-col"><h4>Time 2 (${teamB.length})</h4>${teamB.map(id=>esc((room.players.find(p=>p.id===id)||{}).name||'')).join(', ') || 'vazio'}</div>
+      ${host ? `<button class="btn btn-primary" ${(teamA.length<1||teamB.length<1)?'disabled':''} onclick="startQuemSouBattle()">Começar Quem Sou Eu (Times)</button>` : `<div class="banner center" style="margin-top:1rem;"><strong>Times organizados!</strong><br><span class="hint">Esperando o anfitrião(a) iniciar a partida...</span></div>`}
+    ` : `
+      <p class="sub center">No modo Individual, <strong>cada jogador recebe um personagem secreto diferente</strong>! Façam perguntas de "Sim" ou "Não" uns para os outros para adivinhar quem vocês são!</p>
+      ${renderCategoryFilterHTML(g.filterCat)}
+      <div class="card mb">
+        <label class="field-label">Jogadores na sala (${room.players.length})</label>
+        <div style="display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.4rem;">
+          ${room.players.map(p => `
+            <div style="background:var(--surface2); border:1px solid var(--border); padding:.4rem .75rem; border-radius:8px; font-weight:600; font-size:.85rem;">
+              👤 ${esc(p.name)}
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      ${host ? `<button class="btn btn-primary" onclick="startQuemSouBattle()">Começar Quem Sou Eu (Individual)</button>` : `<div class="banner center" style="margin-top:1rem;"><strong>Modo Individual selecionado!</strong><br><span class="hint">Esperando o anfitrião(a) iniciar a partida...</span></div>`}
+    `}
   `;
+}
+
+async function setQuemSouMode(mode){
+  if(!isHost()) return;
+  await updateRoom(r=>{
+    if(!r.gameData) r.gameData = {};
+    r.gameData.mode = mode;
+  });
 }
 
 async function cycleQuemSouTeam(pid){
@@ -1113,33 +1393,109 @@ async function cycleQuemSouTeam(pid){
 async function startQuemSouBattle(){
   await updateRoom(r=>{
     const g = r.gameData || {};
-    if(!g.teamA) g.teamA = [];
-    if(!g.teamB) g.teamB = [];
-    const activeIds = (r.players || []).map(p => p.id);
-    g.teamA = g.teamA.filter(id => activeIds.includes(id));
-    g.teamB = g.teamB.filter(id => activeIds.includes(id));
-    activeIds.forEach(pid => {
-      if(!g.teamA.includes(pid) && !g.teamB.includes(pid)){
-        if(g.teamA.length <= g.teamB.length) g.teamA.push(pid);
-        else g.teamB.push(pid);
-      }
-    });
-
+    const mode = g.mode || 'teams';
+    g.mode = mode;
     g.stage = 'play';
-    g.turnIdxA = 0;
-    g.turnIdxB = 0;
-    g.playerAId = g.teamA[0] || (r.players[0] ? r.players[0].id : null);
-    g.playerBId = g.teamB[0] || (r.players[1] ? r.players[1].id : g.playerAId);
 
-    const { charA, charB } = getTwoRandomQuemSouCharacters();
-    g.characterA = charA;
-    g.characterB = charB;
+    if(mode === 'individual'){
+      const individualChars = {};
+      const usedInRound = [];
+      (r.players || []).forEach(p => {
+        const char = randomQuemSouCharacter(usedInRound);
+        usedInRound.push(char);
+        individualChars[p.id] = char;
+      });
+      g.individualChars = individualChars;
+    } else {
+      if(!g.teamA) g.teamA = [];
+      if(!g.teamB) g.teamB = [];
+      const activeIds = (r.players || []).map(p => p.id);
+      g.teamA = g.teamA.filter(id => activeIds.includes(id));
+      g.teamB = g.teamB.filter(id => activeIds.includes(id));
+      activeIds.forEach(pid => {
+        if(!g.teamA.includes(pid) && !g.teamB.includes(pid)){
+          if(g.teamA.length <= g.teamB.length) g.teamA.push(pid);
+          else g.teamB.push(pid);
+        }
+      });
+
+      g.turnIdxA = g.turnIdxA || 0;
+      g.turnIdxB = g.turnIdxB || 0;
+      g.playerAId = g.teamA[g.turnIdxA % g.teamA.length] || (r.players[0] ? r.players[0].id : null);
+      g.playerBId = g.teamB[g.turnIdxB % g.teamB.length] || (r.players[1] ? r.players[1].id : g.playerAId);
+
+      const { charA, charB } = getTwoRandomQuemSouCharacters();
+      g.characterA = charA;
+      g.characterB = charB;
+    }
   });
   burstConfetti(18);
 }
 
 function quemsouPlayScreen(){
   const g = room.gameData || {};
+  const mode = g.mode || 'teams';
+
+  if(mode === 'individual'){
+    const chars = g.individualChars || {};
+    let myChar = chars[me.id];
+    if(!myChar){
+      myChar = randomQuemSouCharacter();
+      chars[me.id] = myChar;
+    }
+
+    let inner = `
+      <p class="sub center" style="margin-bottom: 1rem;">
+        💬 Olhe os personagens dos seus amigos na tela e responda <strong>"Sim"</strong> ou <strong>"Não"</strong> para as perguntas deles!
+      </p>
+
+      <!-- Cartão do Próprio Jogador (Escondido para o próprio jogador) -->
+      <div class="card center mb" style="border: 2px dashed var(--accent); background: rgba(139, 92, 246, 0.08); padding: 1.2rem 1rem;">
+        <div class="badge" style="background: var(--accent); color:#fff; font-size:.8rem; margin: 0 auto .4rem;">SEU PERSONAGEM SECRETO</div>
+        <div class="avatar center" style="background:${colorFor(me.id)}; margin:0 auto .4rem; width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:50%; font-weight:700; color:#fff;">${esc(initials(me.name))}</div>
+        <label class="field-label" style="color:var(--accent); font-weight:700;">Quem é você?</label>
+        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.6rem; margin:.3rem 0 .2rem; color:var(--accent);">
+          ❓ ? ? ? (Você NÃO sabe!)
+        </p>
+        <p class="hint" style="margin-top:.4rem; font-style:italic;">
+          Faça perguntas de "Sim" ou "Não" para a galera até descobrir quem você é!
+        </p>
+      </div>
+
+      <div class="eyebrow center mb" style="margin-top: 1.4rem;">Personagens dos outros jogadores</div>
+      <p class="hint center mb" style="font-size:.82rem; margin-top:-.5rem;">Veja quem eles são e responda "Sim" ou "Não" pras perguntas deles:</p>
+
+      <div class="other-players-list mb" style="display:flex; flex-direction:column; gap:.6rem;">
+        ${room.players.filter(p => p.id !== me.id).map(p => {
+          const pChar = chars[p.id] || '---';
+          return `
+            <div class="card" style="padding: 0.85rem 1rem; margin-bottom:0;">
+              <div style="display:flex; align-items:center; gap: 0.75rem;">
+                <div class="avatar" style="background:${colorFor(p.id)}; width:38px; height:38px; display:flex; align-items:center; justify-content:center; border-radius:50%; font-weight:700; color:#fff; flex-shrink:0;">
+                  ${esc(initials(p.name))}
+                </div>
+                <div style="flex:1; overflow:hidden;">
+                  <div style="font-weight:700; font-size:0.92rem; color:var(--text);">${esc(p.name)}</div>
+                  <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.15rem; color:var(--secondary); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">
+                    🎭 ${esc(pChar)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    `;
+
+    if(isHost()){
+      inner += `<button class="btn btn-primary" onclick="revealQuemSou()">Revelar personagens e encerrar rodada</button>`;
+    } else {
+      inner += `<p class="hint center" style="margin-top:.8rem;">O anfitrião(a) encerrará a rodada quando todos terminarem...</p>`;
+    }
+    return inner;
+  }
+
+  // Modos em Times
   const teamA = g.teamA || [];
   const teamB = g.teamB || [];
   const playerAId = g.playerAId || teamA[0] || (room.players[0] && room.players[0].id);
@@ -1234,6 +1590,51 @@ async function revealQuemSou(){
 
 function quemsouRevealScreen(){
   const g = room.gameData || {};
+  const mode = g.mode || 'teams';
+
+  if(mode === 'individual'){
+    const chars = g.individualChars || {};
+    let inner = `
+      <div class="card center mb">
+        <div style="font-size:2.2rem; margin-bottom:.3rem;">🎭</div>
+        <label class="field-label">Resultado da Rodada (Individual)</label>
+        <p class="sub mb" style="margin-top:.2rem;">Personagens sorteados para cada jogador:</p>
+
+        <div style="display:flex; flex-direction:column; gap:.6rem; margin-top:1rem; text-align:left;">
+          ${room.players.map(p => {
+            const pChar = chars[p.id] || '---';
+            return `
+              <div style="padding: .75rem 1rem; background: rgba(255,255,255,0.04); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:.6rem;">
+                  <div style="background:${colorFor(p.id)}; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; color:#fff; font-size:.8rem; font-weight:700;">
+                    ${esc(initials(p.name))}
+                  </div>
+                  <span style="font-weight:700; color:var(--text); font-size:.95rem;">${esc(p.name)}</span>
+                </div>
+                <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.1rem; color:var(--secondary);">
+                  🎭 ${esc(pChar)}
+                </span>
+              </div>
+            `;
+          }).join('')}
+        </div>
+      </div>
+    `;
+
+    if(isHost()){
+      inner += `
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="nextQuemSouRound()">Próxima rodada</button>
+          <button class="btn btn-outline" onclick="resetQuemSouTeams()">Mudar modo / times</button>
+        </div>
+      `;
+    } else {
+      inner += `<p class="hint center">Esperando a próxima rodada...</p>`;
+    }
+    return inner;
+  }
+
+  // Modos em Times
   const playerAId = g.playerAId;
   const playerBId = g.playerBId;
   const playerAName = (room.players.find(p=>p.id===playerAId)||{}).name || 'Alguém do Time 1';
@@ -1265,7 +1666,7 @@ function quemsouRevealScreen(){
     inner += `
       <div class="btn-row">
         <button class="btn btn-primary" onclick="nextQuemSouRound()">Próxima rodada</button>
-        <button class="btn btn-outline" onclick="resetQuemSouTeams()">Refazer times</button>
+        <button class="btn btn-outline" onclick="resetQuemSouTeams()">Mudar modo / times</button>
       </div>
     `;
   } else {
@@ -1277,18 +1678,32 @@ function quemsouRevealScreen(){
 async function nextQuemSouRound(){
   await updateRoom(r=>{
     const g = r.gameData || {};
-    if (!g.teamA || g.teamA.length === 0) g.teamA = (r.players || []).map(p=>p.id);
-    if (!g.teamB || g.teamB.length === 0) g.teamB = (r.players || []).map(p=>p.id);
+    const mode = g.mode || 'teams';
 
-    g.turnIdxA = ((g.turnIdxA || 0) + 1) % g.teamA.length;
-    g.turnIdxB = ((g.turnIdxB || 0) + 1) % g.teamB.length;
-    g.playerAId = g.teamA[g.turnIdxA % g.teamA.length];
-    g.playerBId = g.teamB[g.turnIdxB % g.teamB.length];
+    if(mode === 'individual'){
+      const individualChars = {};
+      const usedInRound = [];
+      (r.players || []).forEach(p => {
+        const char = randomQuemSouCharacter(usedInRound);
+        usedInRound.push(char);
+        individualChars[p.id] = char;
+      });
+      g.individualChars = individualChars;
+      g.stage = 'play';
+    } else {
+      if (!g.teamA || g.teamA.length === 0) g.teamA = (r.players || []).map(p=>p.id);
+      if (!g.teamB || g.teamB.length === 0) g.teamB = (r.players || []).map(p=>p.id);
 
-    const { charA, charB } = getTwoRandomQuemSouCharacters();
-    g.characterA = charA;
-    g.characterB = charB;
-    g.stage = 'play';
+      g.turnIdxA = ((g.turnIdxA || 0) + 1) % g.teamA.length;
+      g.turnIdxB = ((g.turnIdxB || 0) + 1) % g.teamB.length;
+      g.playerAId = g.teamA[g.turnIdxA % g.teamA.length];
+      g.playerBId = g.teamB[g.turnIdxB % g.teamB.length];
+
+      const { charA, charB } = getTwoRandomQuemSouCharacters();
+      g.characterA = charA;
+      g.characterB = charB;
+      g.stage = 'play';
+    }
   });
   burstConfetti(18);
 }
@@ -1371,9 +1786,54 @@ async function cycleDuvidoTeam(pid){
 }
 async function setDuvidoTime(t){ await updateRoom(r=>{ if(r.gameData) r.gameData.timeLimit=t; }); }
 
+let duvidoDraftA = 4;
+let duvidoDraftB = 4;
+
+function adjustDuvidoDraftA(delta){
+  duvidoDraftA = Math.max(1, duvidoDraftA + delta);
+  render();
+}
+
+function adjustDuvidoDraftB(delta){
+  duvidoDraftB = Math.max(1, duvidoDraftB + delta);
+  render();
+}
+
+async function placeDuvidoBid(targetTeam, targetPlayerId, count){
+  await updateRoom(r=>{
+    if(r.gameData){
+      r.gameData.currentBid = {
+        playerId: targetPlayerId,
+        targetTeam: targetTeam,
+        count: count,
+        bidderId: me.id
+      };
+    }
+  });
+}
+
+async function callDuvidoChallenge(){
+  await updateRoom(r=>{
+    const g = r.gameData || {};
+    if(g.currentBid){
+      g.required = g.currentBid.count;
+      g.currentPlayerId = g.currentBid.playerId;
+      g.challengerId = me.id;
+      g.timerStartedAt = null;
+    }
+  });
+}
+
+async function resetDuvidoTeams(){
+  await updateRoom(r=>{
+    if(r.gameData) r.gameData.stage = 'teams';
+  });
+}
+
 async function startDuvidoBattle(){
   clearDuvidoTicker();
-  duvidoCountDraft = 5;
+  duvidoDraftA = 4;
+  duvidoDraftB = 4;
   await updateRoom(r=>{
     const g = r.gameData || {};
     if(!g.teamA) g.teamA = [];
@@ -1389,14 +1849,14 @@ async function startDuvidoBattle(){
     });
 
     g.stage = 'challenge';
-    g.turnTeam = 'A';
     g.turnIdxA = 0;
     g.turnIdxB = 0;
     g.playerAId = g.teamA[0] || (r.players[0] ? r.players[0].id : null);
     g.playerBId = g.teamB[0] || (r.players[1] ? r.players[1].id : g.playerAId);
-    g.currentPlayerId = g.playerAId;
     g.category = randomDuvidoCategory();
+    g.currentBid = null;
     g.required = null;
+    g.currentPlayerId = null;
     g.challengerId = null;
     g.timerStartedAt = null;
     g.success = null;
@@ -1413,22 +1873,29 @@ function duvidoChallengeScreen(){
   const playerAName = (room.players.find(p=>p.id===playerAId)||{}).name || 'Alguém do Time 1';
   const playerBName = (room.players.find(p=>p.id===playerBId)||{}).name || 'Alguém do Time 2';
 
-  const targetTeam = teamOf(g.currentPlayerId) || 'A';
-  const targetName = (room.players.find(p=>p.id===g.currentPlayerId)||{}).name || 'Alguém';
-  const myTeam = teamOf(me.id);
+  const isSpeaker = (me.id === playerAId || me.id === playerBId);
 
   let inner = duvidoScoreHeader();
+
+  // Oradores Representantes da Rodada
   inner += `
-    <div class="prompt-box mb">
-      <div class="eyebrow">Na roda (Vez de responder)</div>
-      <div class="prompt-text">${esc(targetName)} (Time ${targetTeam==='A'?'1':'2'})</div>
+    <div class="card mb" style="padding:.9rem 1rem; border:1px solid var(--border);">
+      <div style="display:flex; justify-content:space-between; align-items:center; text-align:center;">
+        <div style="flex:1; padding:.4rem; background:rgba(6, 182, 212, 0.08); border-radius:10px; margin-right:.4rem;">
+          <span style="font-size:.75rem; color:var(--secondary); font-weight:700;">ORADOR TIME 1</span>
+          <div style="font-weight:700; font-size:1.05rem; margin-top:.2rem; color:var(--text);">${esc(playerAName)}</div>
+        </div>
+        <div style="font-weight:700; font-size:.9rem; color:var(--dim);">VS</div>
+        <div style="flex:1; padding:.4rem; background:rgba(139, 92, 246, 0.08); border-radius:10px; margin-left:.4rem;">
+          <span style="font-size:.75rem; color:var(--accent); font-weight:700;">ORADOR TIME 2</span>
+          <div style="font-weight:700; font-size:1.05rem; margin-top:.2rem; color:var(--text);">${esc(playerBName)}</div>
+        </div>
+      </div>
     </div>
   `;
 
-  // Secret for 1 player of each team (playerAId and playerBId)
-  const isSecret = (me.id === playerAId || me.id === playerBId);
-
-  if (isSecret) {
+  // Tema: Escondido para quem vai responder, Visível para os outros
+  if (isSpeaker) {
     inner += `
       <div class="card center mb" style="border: 2px dashed var(--accent); background: rgba(139, 92, 246, 0.08); padding: 1.2rem 1rem;">
         <label class="field-label" style="color:var(--accent); font-weight:700;">Tema Sorteado</label>
@@ -1436,7 +1903,7 @@ function duvidoChallengeScreen(){
           🔒 Tema Secreto (Você NÃO sabe!)
         </p>
         <p class="hint" style="margin-top:.4rem; font-style:italic;">
-          Você e 1 integrante do outro time não sabem o tema desta rodada!
+          Você é o orador da rodada! O pessoal dos times vai fazer lances apostando em você ou no orador adversário.
         </p>
       </div>
     `;
@@ -1444,59 +1911,130 @@ function duvidoChallengeScreen(){
     inner += `
       <div class="card center mb" style="padding: 1.2rem 1rem;">
         <label class="field-label" style="font-weight:700; color:var(--dim);">Tema Sorteado</label>
-        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.4rem; margin:.3rem 0; color:var(--accent);">${esc(g.category)}</p>
+        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.5rem; margin:.3rem 0; color:var(--accent);">${esc(g.category)}</p>
         <p class="hint" style="margin-top:.3rem; font-size:.82rem;">
-          🤫 <strong>Não sabem o tema:</strong> <span style="color:var(--secondary); font-weight:600;">${esc(playerAName)}</span> (Time 1) & <span style="color:var(--accent); font-weight:600;">${esc(playerBName)}</span> (Time 2)
+          🤫 <strong>Não sabem o tema:</strong> <span style="color:var(--secondary); font-weight:600;">${esc(playerAName)}</span> (T1) & <span style="color:var(--accent); font-weight:600;">${esc(playerBName)}</span> (T2)
         </p>
       </div>
     `;
   }
 
+  // Fase 1: Leilão de Lances
   if(g.required === null){
     clearDuvidoTicker();
-    if(myTeam && myTeam !== targetTeam){
+
+    const bid = g.currentBid;
+    if(bid){
+      const bidderName = (room.players.find(p=>p.id===bid.bidderId)||{}).name || 'Alguém';
+      const targetName = (room.players.find(p=>p.id===bid.playerId)||{}).name || 'Alguém';
       inner += `
-        <div class="card center mb">
-          <p class="sub mb" style="margin-bottom:.8rem;">Definam em grupo quantos itens <strong>${esc(targetName)}</strong> precisa citar em ${g.timeLimit} segundos:</p>
-          <div class="stepper mb">
-            <button onclick="adjustDuvidoCount(-1)">−</button>
-            <div class="req-num">${duvidoCountDraft}</div>
-            <button onclick="adjustDuvidoCount(1)">+</button>
+        <div class="card center mb" style="border:2px solid var(--secondary); background:rgba(6, 182, 212, 0.12); padding:1.1rem 1rem;">
+          <div class="badge" style="background:var(--secondary); color:#fff; font-size:.78rem; margin:0 auto .3rem;">LANCE MAIS ALTO</div>
+          <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.3rem; margin:.2rem 0; color:var(--text);">
+            <strong>${esc(targetName)}</strong> (Time ${bid.targetTeam==='A'?'1':'2'}) deve citar <span style="color:var(--secondary); font-size:1.7rem;">${bid.count}</span> itens!
+          </p>
+          <p class="hint" style="margin-top:.3rem; font-size:.8rem;">Apostado por ${esc(bidderName)}</p>
+        </div>
+      `;
+    } else {
+      inner += `
+        <div class="banner center mb" style="padding:.9rem;">
+          📢 <strong>Nenhum lance feito ainda!</strong> Façam lances apostando quantos itens o orador de cada time consegue citar!
+        </div>
+      `;
+    }
+
+    if (!isSpeaker) {
+      const minBid = bid ? bid.count + 1 : 1;
+      if (duvidoDraftA < minBid) duvidoDraftA = minBid;
+      if (duvidoDraftB < minBid) duvidoDraftB = minBid;
+
+      inner += `
+        <div class="card mb" style="padding:1rem;">
+          <label class="field-label" style="text-align:center; font-weight:700; margin-bottom:.8rem;">Fazer ou Aumentar Lance</label>
+          
+          <div style="display:flex; gap:.6rem; margin-bottom:1rem;">
+            <!-- Lance para Time 1 -->
+            <div style="flex:1; padding:.8rem; background:rgba(6, 182, 212, 0.08); border-radius:12px; border:1px solid rgba(6, 182, 212, 0.2); text-align:center;">
+              <div style="font-size:.8rem; font-weight:700; color:var(--secondary); margin-bottom:.3rem;">${esc(playerAName)} (T1)</div>
+              <div class="stepper mb" style="justify-content:center; margin:.4rem 0;">
+                <button onclick="adjustDuvidoDraftA(-1)">−</button>
+                <div class="req-num" style="font-size:1.2rem;">${duvidoDraftA}</div>
+                <button onclick="adjustDuvidoDraftA(1)">+</button>
+              </div>
+              <button class="btn btn-outline" style="font-size:.82rem; padding:.5rem .3rem; width:100%;" onclick="placeDuvidoBid('A', '${playerAId}', ${duvidoDraftA})">
+                Apostar ${duvidoDraftA}
+              </button>
+            </div>
+
+            <!-- Lance para Time 2 -->
+            <div style="flex:1; padding:.8rem; background:rgba(139, 92, 246, 0.08); border-radius:12px; border:1px solid rgba(139, 92, 246, 0.2); text-align:center;">
+              <div style="font-size:.8rem; font-weight:700; color:var(--accent); margin-bottom:.3rem;">${esc(playerBName)} (T2)</div>
+              <div class="stepper mb" style="justify-content:center; margin:.4rem 0;">
+                <button onclick="adjustDuvidoDraftB(-1)">−</button>
+                <div class="req-num" style="font-size:1.2rem;">${duvidoDraftB}</div>
+                <button onclick="adjustDuvidoDraftB(1)">+</button>
+              </div>
+              <button class="btn btn-outline" style="font-size:.82rem; padding:.5rem .3rem; width:100%;" onclick="placeDuvidoBid('B', '${playerBId}', ${duvidoDraftB})">
+                Apostar ${duvidoDraftB}
+              </button>
+            </div>
           </div>
-          <button class="btn btn-primary" onclick="confirmDuvidoChallenge()">Desafiar!</button>
+
+          ${bid ? `
+            <button class="btn btn-danger" style="width:100%; font-size:1.1rem; font-weight:700; padding:.85rem;" onclick="callDuvidoChallenge()">
+              🔥 DUVIDO! (Desafiar ${bid.count} itens)
+            </button>
+          ` : ''}
         </div>
       `;
     } else {
       inner += `
         <div class="banner center mb">
-          ⏳ O time adversário está decidindo o tamanho do desafio para <strong>${esc(targetName)}</strong>...
+          ⏳ Aguarde! Seus companheiros de time e oponentes estão fazendo os lances...
         </div>
       `;
     }
   } else if(!g.timerStartedAt){
+    // Fase 2: Desafio travado pelo "DUVIDO!"
     clearDuvidoTicker();
+    const targetName = (room.players.find(p=>p.id===g.currentPlayerId)||{}).name || 'Alguém';
+    const challengerName = (room.players.find(p=>p.id===g.challengerId)||{}).name || 'Alguém';
+
     inner += `
-      <div class="card center mb">
-        <label class="field-label">Desafio Aceito!</label>
-        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.4rem; margin:.3rem 0; color:var(--secondary);">
-          Dizer <strong>${g.required}</strong> itens em ${g.timeLimit}s
+      <div class="card center mb" style="border: 2px solid var(--accent); padding:1.4rem 1rem;">
+        <div class="badge" style="background:var(--accent); color:#fff; font-size:.8rem; margin:0 auto .4rem;">DESAFIO ACEITO!</div>
+        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.4rem; margin:.3rem 0; color:var(--text);">
+          🗣️ <strong>${esc(targetName)}</strong> precisa citar <span style="color:var(--accent); font-size:1.8rem;">${g.required}</span> itens!
         </p>
-      </div>`;
+        <p class="hint" style="margin-top:.4rem; font-size:.85rem;">
+          Desafio lançado por <strong>${esc(challengerName)}</strong> ("Duvido!"). Tempo: ${g.timeLimit} segundos.
+        </p>
+        <div style="margin-top:.8rem; padding:.6rem; background:rgba(139, 92, 246, 0.1); border-radius:10px;">
+          <span style="font-size:.8rem; font-weight:700; color:var(--accent);">TEMA DA RODADA:</span>
+          <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.3rem; color:var(--text); margin-top:.2rem;">🎭 ${esc(g.category)}</div>
+        </div>
+      </div>
+    `;
     if(isHost()){
       inner += `<button class="btn btn-primary" onclick="startDuvidoTimer()">Iniciar Cronômetro!</button>`;
     } else {
       inner += `<p class="hint center">Esperando o anfitrião(a) iniciar o cronômetro...</p>`;
     }
   } else {
+    // Fase 3: Cronômetro rodando / finalizado
+    const targetName = (room.players.find(p=>p.id===g.currentPlayerId)||{}).name || 'Alguém';
     const remaining = Math.max(0, g.timeLimit - Math.floor((Date.now()-g.timerStartedAt)/1000));
     if(remaining > 0){
       ensureDuvidoTicker();
       inner += `
         <div class="card center mb">
-          <label class="field-label">Desafio em andamento</label>
-          <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.2rem; margin:.2rem 0;">Dizer ${g.required} itens</p>
-          <div class="timer-num" style="font-size:3rem; font-weight:700; color:var(--secondary); margin:.4rem 0;">${remaining}s</div>
-          <p class="hint">🗣️ <strong>${esc(targetName)}</strong>, fale em voz alta os itens!</p>
+          <label class="field-label">Desafio em Andamento!</label>
+          <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.3rem; margin:.2rem 0;">
+            ${esc(targetName)} deve citar ${g.required} itens de <strong>${esc(g.category)}</strong>
+          </p>
+          <div class="timer-num" style="font-size:3.5rem; font-weight:700; color:var(--secondary); margin:.4rem 0;">${remaining}s</div>
+          <p class="hint">🗣️ Fale em voz alta! O grupo está contando!</p>
         </div>
       `;
     } else {
@@ -1504,7 +2042,7 @@ function duvidoChallengeScreen(){
       inner += `
         <div class="prompt-box mb center">
           <div class="eyebrow" style="color:var(--danger);">⏱️ Tempo esgotado!</div>
-          <div class="prompt-text">Devia dizer ${g.required} itens do tema</div>
+          <div class="prompt-text">${esc(targetName)} devia citar ${g.required} itens do tema "${esc(g.category)}"</div>
         </div>
       `;
       if(isHost()){
@@ -1521,18 +2059,6 @@ function duvidoChallengeScreen(){
   return inner;
 }
 
-function adjustDuvidoCount(delta){ duvidoCountDraft = Math.max(1, duvidoCountDraft+delta); render(); }
-
-async function confirmDuvidoChallenge(){
-  await updateRoom(r=>{
-    if (r.gameData) {
-      r.gameData.required = duvidoCountDraft;
-      r.gameData.challengerId = me.id;
-      r.gameData.timerStartedAt = null;
-    }
-  });
-}
-
 async function startDuvidoTimer(){
   await updateRoom(r=>{ if (r.gameData) r.gameData.timerStartedAt = Date.now(); });
 }
@@ -1543,7 +2069,7 @@ async function markDuvidoResult(success){
     const g = r.gameData || {};
     g.stage = 'result';
     g.success = success;
-    const targetTeam = (g.teamA && g.teamA.includes(g.currentPlayerId)) ? 'A' : 'B';
+    const targetTeam = teamOf(g.currentPlayerId) || 'A';
     if(success){
       if(targetTeam==='A') g.scoreA = (g.scoreA||0) + 1; else g.scoreB = (g.scoreB||0) + 1;
       const pl = (r.players || []).find(p=>p.id===g.currentPlayerId);
@@ -1560,51 +2086,59 @@ async function markDuvidoResult(success){
 
 function duvidoResultScreen(){
   const g = room.gameData || {};
-  const playerAId = g.playerAId || (g.teamA && g.teamA[0]);
-  const playerBId = g.playerBId || (g.teamB && g.teamB[0]);
-  const playerAName = (room.players.find(p=>p.id===playerAId)||{}).name || 'Alguém do Time 1';
-  const playerBName = (room.players.find(p=>p.id===playerBId)||{}).name || 'Alguém do Time 2';
-
   const targetName = (room.players.find(p=>p.id===g.currentPlayerId)||{}).name || 'Alguém';
+  const targetTeam = teamOf(g.currentPlayerId) || 'A';
+  const winningTeamName = g.success ? `Time ${targetTeam==='A'?'1':'2'}` : `Time ${targetTeam==='A'?'2':'1'}`;
+
   let inner = duvidoScoreHeader();
   inner += `
     <div class="card center mb" style="padding:1.5rem 1rem;">
       <div style="font-size:3rem; margin-bottom:.3rem;">${g.success?'🎉':'❌'}</div>
       <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.3rem; margin:.4rem 0;">
-        ${esc(targetName)} ${g.success?'conseguiu':'não conseguiu'} citar os ${g.required} itens!
+        ${esc(targetName)} ${g.success?'CONSEGUIU':'NÃO CONSEGUIU'} citar os ${g.required} itens!
+      </p>
+      <p class="sub mb" style="margin-top:.4rem; color:var(--secondary); font-weight:700;">
+        Ponto para o ${winningTeamName}!
       </p>
       <div style="margin-top:.8rem; padding:.8rem; background:rgba(139, 92, 246, 0.1); border-radius:12px; border:1px solid rgba(139, 92, 246, 0.3);">
-        <span style="font-size:0.85rem; font-weight:700; color:var(--accent); text-transform:uppercase;">Tema Secreto Revelado</span>
-        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.4rem; margin:.2rem 0 0; color:var(--text);">"${esc(g.category)}"</p>
+        <span style="font-size:0.85rem; font-weight:700; color:var(--accent); text-transform:uppercase;">Tema da Rodada</span>
+        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.3rem; margin:.2rem 0 0; color:var(--text);">${esc(g.category)}</p>
       </div>
-      <p class="hint" style="margin-top:.6rem;">
-        Tentavam responder sem saber o tema: <strong>${esc(playerAName)}</strong> (Time 1) e <strong>${esc(playerBName)}</strong> (Time 2)
-      </p>
     </div>
   `;
-  if(isHost()) inner += `<button class="btn btn-primary" onclick="nextDuvidoTurn()">Próxima rodada</button>`;
-  else inner += `<p class="hint center">Esperando a próxima rodada...</p>`;
+
+  if(isHost()){
+    inner += `
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="nextDuvidoTurn()">Próxima rodada</button>
+        <button class="btn btn-outline" onclick="resetDuvidoTeams()">Mudar times</button>
+      </div>
+    `;
+  } else {
+    inner += `<p class="hint center">Esperando a próxima rodada...</p>`;
+  }
   return inner;
 }
 
 async function nextDuvidoTurn(){
   clearDuvidoTicker();
-  duvidoCountDraft = 5;
+  duvidoDraftA = 4;
+  duvidoDraftB = 4;
   await updateRoom(r=>{
     const g = r.gameData || {};
     if(!g.teamA || g.teamA.length === 0) g.teamA = (r.players || []).map(p=>p.id);
     if(!g.teamB || g.teamB.length === 0) g.teamB = (r.players || []).map(p=>p.id);
 
-    if(g.turnTeam==='A'){ g.turnIdxA = ((g.turnIdxA||0)+1) % g.teamA.length; }
-    else { g.turnIdxB = ((g.turnIdxB||0)+1) % g.teamB.length; }
-    g.turnTeam = g.turnTeam==='A' ? 'B' : 'A';
+    g.turnIdxA = ((g.turnIdxA||0)+1) % g.teamA.length;
+    g.turnIdxB = ((g.turnIdxB||0)+1) % g.teamB.length;
 
     g.playerAId = g.teamA[g.turnIdxA % g.teamA.length];
     g.playerBId = g.teamB[g.turnIdxB % g.teamB.length];
-    g.currentPlayerId = g.turnTeam==='A' ? g.playerAId : g.playerBId;
 
     g.category = randomDuvidoCategory();
+    g.currentBid = null;
     g.required = null;
+    g.currentPlayerId = null;
     g.challengerId = null;
     g.timerStartedAt = null;
     g.success = null;
@@ -1628,10 +2162,12 @@ function impostorScreen(){
       <div class="card ${amImpostor?'impostor-card red':''} center">
         ${amImpostor ? `
           <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.15rem; color:#B0203A; margin:.2rem 0 .5rem;">Você é o IMPOSTOR</p>
-          <p class="hint" style="font-style:italic;">Sua categoria é: ${esc(g.clue)}. Use isso pra bolar pistas que combinem, sem chutar a palavra certa dos outros.</p>
+          <p class="hint" style="margin-bottom:.3rem;">Sua palavra secreta falsa é</p>
+          <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.5rem; color:#B0203A; margin-bottom:.5rem;">${esc(g.impostorWord || '---')}</p>
+          <p class="hint" style="font-style:italic;">Dica de socorro: ${esc(g.clue || '---')}. Use isso pra bolar pistas que combinem!</p>
         ` : `
           <p class="hint" style="margin-bottom:.3rem;">Sua palavra secreta é</p>
-          <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.4rem;">${esc(g.majorityWord)}</p>
+          <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.5rem;">${esc(g.majorityWord || '---')}</p>
         `}
       </div>
       <p class="hint mb">Dê pistas sobre sua palavra sem falar ela. Quem não souber a palavra certa pode estar disfarçando!</p>
@@ -1681,12 +2217,27 @@ function impostorScreen(){
   `;
 }
 async function startImpostorRound(){
-  const pair = IMPOSTOR_PAIRS[Math.floor(Math.random()*IMPOSTOR_PAIRS.length)];
+  const g = (room && room.gameData) ? room.gameData : {};
+  const filterCat = g.filterCat || 'todos';
+  const pair = randomImpostorPair();
   const impostorPlayer = room.players[Math.floor(Math.random()*room.players.length)];
   impostorVoted = false; selectedImpostorVote = null;
+  const swap = Math.random() < 0.5;
+  const majWord = swap ? pair.word2 : pair.word1;
+  const impWord = swap ? pair.word1 : pair.word2;
+
   await updateRoom(r=>{
     const prevRound = (r.gameData && r.gameData.roundId) || 0;
-    r.gameData = { stage:'reveal', roundId: prevRound+1, majorityWord: pair[0], impostorWord: pair[1], clue: pair[2], impostorId: impostorPlayer.id, results:null };
+    r.gameData = {
+      stage: 'reveal',
+      filterCat: filterCat,
+      roundId: prevRound + 1,
+      majorityWord: majWord,
+      impostorWord: impWord,
+      clue: pair.clue,
+      impostorId: impostorPlayer.id,
+      results: null
+    };
   });
 }
 async function openImpostorDiscuss(){ await updateRoom(r=>{ r.gameData.stage='discuss'; }); }
@@ -1779,11 +2330,21 @@ function top10Screen(){
   return '';
 }
 async function startTop10Round(){
-  const idx = Math.floor(Math.random()*TOP10_THEMES.length);
-  const pick = TOP10_THEMES[idx];
+  const g = (room && room.gameData) ? room.gameData : {};
+  const filterCat = g.filterCat || 'todos';
+  const pick = randomTop10Theme();
   const reader = room.players[Math.floor(Math.random()*room.players.length)];
   await updateRoom(r=>{
-    r.gameData = { stage:'active', themeIndex:idx, theme:pick.theme, answers:pick.answers, readerId:reader.id };
+    const used = (r.gameData && Array.isArray(r.gameData.usedTop10Themes)) ? r.gameData.usedTop10Themes : [];
+    if(!used.includes(pick.theme)) used.push(pick.theme);
+    r.gameData = {
+      stage: 'active',
+      filterCat: filterCat,
+      theme: pick.theme,
+      answers: pick.answers,
+      readerId: reader.id,
+      usedTop10Themes: used
+    };
   });
 }
 async function revealTop10(){
