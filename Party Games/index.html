@@ -104,11 +104,10 @@ header{
   display:flex; align-items:center; gap:.7rem;
 }
 .app-icon{
-  width:44px; height:44px; border-radius:14px;
-  background:linear-gradient(135deg, rgba(239, 68, 68, 0.25), rgba(139, 92, 246, 0.35));
-  border:1px solid rgba(255, 255, 255, 0.3);
-  display:flex; align-items:center; justify-content:center; font-size:1.15rem; flex-shrink:0;
-  box-shadow:0 0 20px rgba(239, 68, 68, 0.35), 0 0 15px rgba(139, 92, 246, 0.35);
+  width:38px; height:38px; border-radius:13px;
+  background:rgba(139, 92, 246, 0.85); border:1px solid rgba(255, 255, 255, 0.3);
+  display:flex; align-items:center; justify-content:center; font-size:1.25rem; flex-shrink:0;
+  box-shadow:0 0 20px rgba(139, 92, 246, 0.5);
   animation:partyPulse 2.4s ease-in-out infinite;
 }
 @keyframes partyPulse{
@@ -533,7 +532,7 @@ input, textarea{
 <div id="confetti-layer"></div>
 <div id="app">
   <header>
-    <div class="app-icon" title="Party Games">🍒🎉</div>
+    <div class="app-icon">🎉</div>
     <div class="wordmark">Party Games</div>
     <div class="header-spacer"></div>
     <div id="install-slot"></div>
@@ -990,9 +989,187 @@ const CHARACTER_BANK = [
   { name: "John Lennon", cat: "conhecimentos" }, { name: "Bob Dylan", cat: "conhecimentos" }
 ];
 
+const EMPRESA_CHARACTERS = [
+  { name: "Mateus Bila", dept: "Conserva" },
+  { name: "Thiago Muller", dept: "Ouvidoria" },
+  { name: "Miguel Rodrigues", dept: "Engenharia" },
+  { name: "Felipe Giron", dept: "GED" },
+  { name: "Gabriel Miranda", dept: "GED" },
+  { name: "Deyvyd Santos", dept: "GED" },
+  { name: "Eliezer", dept: "GED" },
+  { name: "Marcelo", dept: "GED" },
+  { name: "Emmanuele", dept: "GED" },
+  { name: "Taynara", dept: "GED" },
+  { name: "Letícia", dept: "GED" },
+  { name: "Andreia", dept: "GED" },
+  { name: "Jaqueline", dept: "GED" },
+  { name: "Mayara", dept: "GED" },
+  { name: "Mariana", dept: "GED" },
+  { name: "Gabriel Pitinati", dept: "GED-Jovem" },
+  { name: "Maria Luiza", dept: "GED-Jovem" },
+  { name: "Flavio Penna", dept: "Conserva" },
+  { name: "Luiza Braz", dept: "Conserva" },
+  { name: "Luanne Teixeira", dept: "Conserva" },
+  { name: "Sebastião Menezes", dept: "Conserva" },
+  { name: "Thiago Cunha", dept: "Conserva" },
+  { name: "Karla Mendes", dept: "Conserva" },
+  { name: "Milene Pereira", dept: "Conserva" },
+  { name: "João Vitor Costa", dept: "Conserva" },
+  { name: "Patricia Espinosa", dept: "Engenharia" },
+  { name: "Ingrid Lima", dept: "Recebimento Fiscal" },
+  { name: "Felipe Marques", dept: "Recebimento Fiscal" },
+  { name: "Hugo Dias", dept: "Conserva" },
+  { name: "Diogo Silva", dept: "Conserva" },
+  { name: "Darllieli Almeida", dept: "Conserva" },
+  { name: "Vanessa Vieira", dept: "Conserva" },
+  { name: "Jessica dos Santos", dept: "Conserva" },
+  { name: "Fabricio Pasin", dept: "Suprimentos" },
+  { name: "Marcos Botelho", dept: "Conserva" },
+  { name: "Silvania", dept: "Sustentabilidade" },
+  { name: "Silvio Antônio", dept: "Sustentabilidade" },
+  { name: "Aline Chagas", dept: "Sustentabilidade" },
+  { name: "Alex", dept: "Sustentabilidade" },
+  { name: "Maycon", dept: "Sustentabilidade" },
+  { name: "Gael", dept: "Ouvidoria" },
+  { name: "Raonny", dept: "Arrecadação" },
+  { name: "Rodrigo Matta", dept: "Arrecadação" },
+  { name: "Alex Willian", dept: "Pedágio" },
+  { name: "Victor Hugo", dept: "Pedágio" },
+  { name: "Amanda", dept: "RH" },
+  { name: "Natália", dept: "RH" },
+  { name: "Marcella", dept: "RH" },
+  { name: "Cristiano", dept: "RH" },
+  { name: "Renata", dept: "Segurança do Trabalho" },
+  { name: "Rodrigo", dept: "Segurança do Trabalho" },
+  { name: "Adilson Franca", dept: "Engenharia" },
+  { name: "Lucas Comarela", dept: "Engenharia" },
+  { name: "Luana", dept: "Engenharia" },
+  { name: "Leticia", dept: "Engenharia" },
+  { name: "Tamara", dept: "Engenharia" },
+  { name: "Pedro", dept: "Engenharia" },
+  { name: "Vicente", dept: "Engenharia" },
+  { name: "Maria", dept: "Engenharia" },
+  { name: "Salvador", dept: "Engenharia" },
+  { name: "Eduardo", dept: "Engenharia" },
+  { name: "Mayza", dept: "Engenharia" },
+  { name: "Paulinho", dept: "Engenharia" },
+  { name: "Vinicius", dept: "Engenharia" }
+];
+
+const EMPRESA_DEPT_FILTERS = [
+  { id: 'todos', name: '🏢 Todos (64)' },
+  { id: 'Conserva', name: '🚜 Conserva (15)' },
+  { id: 'Engenharia', name: '📐 Engenharia (15)' },
+  { id: 'GED', name: '📁 GED (14)' },
+  { id: 'Sustentabilidade', name: '🌱 Sustentabilidade (5)' },
+  { id: 'RH', name: '👥 RH (4)' },
+  { id: 'Outros', name: '⭐ Outros Setores (11)' }
+];
+
+function renderQuemSouEmpresaDeptFilterHTML(currentDept){
+  const host = isHost();
+  const activeDept = currentDept || 'todos';
+  return `
+    <div class="category-filter-wrap mb">
+      <label class="field-label" style="margin-bottom:.3rem; text-align:center; display:block;">Filtrar por Setor da Empresa</label>
+      <div class="chip-row center" style="justify-content:center; margin-top:.2rem; flex-wrap:wrap; gap:.4rem;">
+        ${EMPRESA_DEPT_FILTERS.map(c => `
+          <div class="pick-chip ${activeDept === c.id ? 'selected' : ''}" 
+               ${host ? `onclick="setCategoryFilter('${c.id}')"` : 'style="opacity:0.7; cursor:default;"'}>
+            ${esc(c.name)}
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function formatQuemSouDisplayBig(rawChar, fallbackColor = 'var(--text)'){
+  if(!rawChar || rawChar === '[object Object]') return `<p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.6rem; margin:.3rem 0; color:${fallbackColor};">Personagem Misterioso</p>`;
+  const str = String(rawChar);
+  const match = str.match(/^(.*?)\s*\((.*?)\)$/);
+  if(match){
+    const name = match[1].trim();
+    const dept = match[2].trim();
+    return `
+      <div style="display:flex; flex-direction:column; align-items:center; gap:.45rem;">
+        <div style="font-family:'Space Grotesk',sans-serif; font-weight:800; font-size:1.75rem; color:${fallbackColor}; letter-spacing:-0.02em; line-height:1.2;">${esc(name)}</div>
+        <div style="display:inline-flex; align-items:center; gap:.35rem; background:linear-gradient(135deg, rgba(139, 92, 246, 0.35), rgba(6, 182, 212, 0.35)); border:1px solid rgba(255, 255, 255, 0.25); color:#fff; font-size:.85rem; font-weight:700; padding:.28rem .85rem; border-radius:999px; box-shadow:0 2px 10px rgba(0,0,0,0.25);">
+          <span>🏢</span> <span>Setor: ${esc(dept)}</span>
+        </div>
+      </div>
+    `;
+  }
+  return `<p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.6rem; margin:.3rem 0; color:${fallbackColor};">${esc(str)}</p>`;
+}
+
+function formatQuemSouDisplayInline(rawChar){
+  if(!rawChar || rawChar === '[object Object]') return '🎭 ---';
+  const str = String(rawChar);
+  const match = str.match(/^(.*?)\s*\((.*?)\)$/);
+  if(match){
+    const name = match[1].trim();
+    const dept = match[2].trim();
+    return `🎭 <strong>${esc(name)}</strong> <span style="font-size:.76rem; opacity:.95; background:rgba(139, 92, 246, 0.28); border:1px solid rgba(255,255,255,0.2); padding:2px 8px; border-radius:6px; font-weight:700; margin-left:5px; color:#fff;">🏢 ${esc(dept)}</span>`;
+  }
+  return `🎭 ${esc(str)}`;
+}
+
 function randomQuemSouCharacter(usedInRound = []){
   const g = room ? room.gameData : null;
+  const isEmpresa = (room && (room.activeGame === 'quemsou_empresa' || (g && g.isEmpresa)));
   const filterCat = (g && g.filterCat) ? g.filterCat : 'todos';
+
+  if (isEmpresa) {
+    let pool = EMPRESA_CHARACTERS;
+    if (filterCat !== 'todos') {
+      if (filterCat === 'GED') {
+        pool = EMPRESA_CHARACTERS.filter(c => c.dept && c.dept.startsWith('GED'));
+      } else if (filterCat === 'Outros') {
+        const mainDepts = ['Conserva', 'GED', 'GED-Jovem', 'Sustentabilidade', 'RH', 'Engenharia'];
+        pool = EMPRESA_CHARACTERS.filter(c => !mainDepts.includes(c.dept));
+      } else {
+        pool = EMPRESA_CHARACTERS.filter(c => c.dept === filterCat);
+      }
+    }
+    if (!pool || pool.length === 0) pool = EMPRESA_CHARACTERS;
+
+    const roomUsed = (g && Array.isArray(g.usedCharacters)) ? g.usedCharacters : [];
+
+    let available = pool.filter(c => {
+      const formatted = `${c.name} (${c.dept})`;
+      return !roomUsed.includes(formatted) && !usedInRound.includes(formatted) && !usedInRound.includes(c.name);
+    });
+
+    if (available.length === 0) {
+      available = pool.filter(c => {
+        const formatted = `${c.name} (${c.dept})`;
+        return !usedInRound.includes(formatted) && !usedInRound.includes(c.name);
+      });
+      if (g && room) g.usedCharacters = [];
+    }
+
+    if (available.length === 0) {
+      available = EMPRESA_CHARACTERS.filter(c => {
+        const formatted = `${c.name} (${c.dept})`;
+        return !usedInRound.includes(formatted) && !usedInRound.includes(c.name);
+      });
+    }
+    if (available.length === 0) available = EMPRESA_CHARACTERS;
+
+    const pick = available[Math.floor(Math.random() * available.length)];
+    const fullName = `${pick.name} (${pick.dept})`;
+
+    if (g && room) {
+      if (!g.usedCharacters) g.usedCharacters = [];
+      if (!g.usedCharacters.includes(fullName)) {
+        g.usedCharacters.push(fullName);
+      }
+    }
+    return fullName;
+  }
+
+  // Quem Sou Eu Tradicional
   let pool = CHARACTER_BANK;
   if(filterCat !== 'todos'){
     const filtered = CHARACTER_BANK.filter(c => c && c.cat === filterCat);
@@ -2454,12 +2631,13 @@ function homeScreen(){
 
     <div id="game-catalog-title" style="display:flex; align-items:center; justify-content:space-between; margin:1.6rem 0 .8rem;">
       <h2 style="font-family:'Space Grotesk',sans-serif; font-size:1.25rem; margin:0; font-weight:700; color:var(--text);">🕹️ Catálogo da Galera</h2>
-      <span style="font-size:.78rem; color:var(--secondary); font-weight:700;">16 JOGOS</span>
+      <span style="font-size:.78rem; color:var(--secondary); font-weight:700;">17 JOGOS</span>
     </div>
 
     <div class="game-grid">
       ${gamePreviewCard('🤔','Mais Provável','Vote em quem faria isso')}
       ${gamePreviewCard('🕵️','Quem Sou Eu','Descubra sua identidade')}
+      ${gamePreviewCard('🏢','Quem Sou Eu (Firma)','Descubra qual colega você é!')}
       ${gamePreviewCard('🤥','Duvido','Aposte e cronometre')}
       ${gamePreviewCard('🎭','Impostor','Descubra quem não sabe a palavra')}
       ${gamePreviewCard('📋','Top 10','Um lê, o resto joga e duvida')}
@@ -2525,6 +2703,7 @@ async function goToMenu(){ await updateRoom(r=>{ r.phase='menu'; r.activeGame=nu
 const GAMES = [
   { id:'top', emoji:'🤔', name:'Mais Provável', desc:'Vote em quem faria isso' },
   { id:'quemsou', emoji:'🕵️', name:'Quem Sou Eu', desc:'Em times ou individual: descubra quem você é!' },
+  { id:'quemsou_empresa', emoji:'🏢', name:'Quem Sou Eu (Firma)', desc:'Edição Especial: adivinhe qual colega de trabalho você é!' },
   { id:'duvido', emoji:'🤥', name:'Duvido', desc:'Aposte e cronometre' },
   { id:'impostor', emoji:'🎭', name:'Impostor', desc:'Descubra quem não sabe a palavra' },
   { id:'top10', emoji:'📋', name:'Top 10', desc:'Um lê, o resto joga e duvida' },
@@ -2674,7 +2853,8 @@ async function startGame(gameId){
     const filterCat = (r.gameData && r.gameData.filterCat) || 'todos';
     if(gameId==='top'){
       r.gameData = { roundId:1, filterCat, idx:0, promptText: getTopPromptText(0, filterCat), revealed:false, results:null };
-    } else if(gameId==='quemsou'){
+    } else if(gameId==='quemsou' || gameId==='quemsou_empresa'){
+      const isEmpresa = (gameId==='quemsou_empresa');
       let teamA = (r.gameData && r.gameData.teamA && r.gameData.teamA.length > 0) ? [...r.gameData.teamA] : [];
       let teamB = (r.gameData && r.gameData.teamB && r.gameData.teamB.length > 0) ? [...r.gameData.teamB] : [];
       const activeIds = (r.players || []).map(p => p.id);
@@ -2685,7 +2865,7 @@ async function startGame(gameId){
           if (teamA.length <= teamB.length) teamA.push(pid); else teamB.push(pid);
         }
       });
-      r.gameData = { stage:'teams', mode:'teams', filterCat, teamA, teamB, turnIdxA:0, turnIdxB:0, playerAId:null, playerBId:null, characterA:null, characterB:null, individualChars:{} };
+      r.gameData = { isEmpresa, stage:'teams', mode:'teams', filterCat: 'todos', teamA, teamB, turnIdxA:0, turnIdxB:0, playerAId:null, playerBId:null, characterA:null, characterB:null, individualChars:{} };
     } else if(gameId==='duvido'){
       let teamA = (r.gameData && r.gameData.teamA && r.gameData.teamA.length > 0) ? [...r.gameData.teamA] : [];
       let teamB = (r.gameData && r.gameData.teamB && r.gameData.teamB.length > 0) ? [...r.gameData.teamB] : [];
@@ -2742,7 +2922,7 @@ function gameScreen(){
   const g = room.activeGame;
   let body = '';
   if(g==='top') body = topScreen();
-  else if(g==='quemsou') body = quemsouScreen();
+  else if(g==='quemsou' || g==='quemsou_empresa') body = quemsouScreen();
   else if(g==='duvido') body = duvidoScreen();
   else if(g==='impostor') body = impostorScreen();
   else if(g==='top10') body = top10Screen();
@@ -2857,6 +3037,7 @@ function quemsouSetupScreen(){
   const g = (room && room.gameData) ? room.gameData : {};
   const host = isHost();
   const mode = g.mode || 'teams';
+  const isEmpresa = (room && (room.activeGame === 'quemsou_empresa' || g.isEmpresa));
 
   if(!g.teamA) g.teamA = [];
   if(!g.teamB) g.teamB = [];
@@ -2874,15 +3055,28 @@ function quemsouSetupScreen(){
   const teamA = g.teamA;
   const teamB = g.teamB;
 
+  const filterHTML = isEmpresa 
+    ? renderQuemSouEmpresaDeptFilterHTML(g.filterCat) 
+    : renderCategoryFilterHTML(g.filterCat);
+
+  const headerBanner = isEmpresa ? `
+    <div class="card center mb" style="background:linear-gradient(135deg, rgba(139, 92, 246, 0.18), rgba(6, 182, 212, 0.18)); border:1px solid rgba(139, 92, 246, 0.4); padding:1rem .8rem;">
+      <div style="font-size:2.2rem; margin-bottom:.2rem;">🏢</div>
+      <h2 style="margin:0; font-size:1.3rem; color:var(--text); font-family:'Space Grotesk',sans-serif; font-weight:800;">Quem Sou Eu — Edição da Firma</h2>
+      <p class="sub" style="margin:.3rem 0 0; font-size:.85rem;">${EMPRESA_CHARACTERS.length} colegas de trabalho de todos os setores para adivinhar!</p>
+    </div>
+  ` : '';
+
   return `
+    ${headerBanner}
     <div class="mode-selector mb center" style="display:flex; justify-content:center; gap:.5rem; margin-bottom:1rem;">
       <button class="btn btn-sm ${mode==='teams'?'btn-primary':'btn-outline'}" ${host?`onclick="setQuemSouMode('teams')"`:''}>👥 Em Times</button>
       <button class="btn btn-sm ${mode==='individual'?'btn-primary':'btn-outline'}" ${host?`onclick="setQuemSouMode('individual')"`:''}>👤 Individual (Todos Jogam)</button>
     </div>
 
     ${mode==='teams' ? `
-      <p class="sub center">Monte dois times. Em cada rodada, <strong>1 pessoa de cada time NÃO saberá qual é o personagem secreto</strong>, enquanto todos os outros saberão!</p>
-      ${renderCategoryFilterHTML(g.filterCat)}
+      <p class="sub center">Monte dois times. Em cada rodada, <strong>1 pessoa de cada time NÃO saberá qual é o ${isEmpresa?'colega':'personagem'} secreto</strong>, enquanto todos os outros saberão!</p>
+      ${filterHTML}
       <div class="chip-row mb">
         ${room.players.map(p=>{
           const cls = teamA.includes(p.id) ? 'teamA' : teamB.includes(p.id) ? 'teamB' : '';
@@ -2891,10 +3085,10 @@ function quemsouSetupScreen(){
       </div>
       <div class="team-col"><h4>Time 1 (${teamA.length})</h4>${teamA.map(id=>esc((room.players.find(p=>p.id===id)||{}).name||'')).join(', ') || 'vazio'}</div>
       <div class="team-col"><h4>Time 2 (${teamB.length})</h4>${teamB.map(id=>esc((room.players.find(p=>p.id===id)||{}).name||'')).join(', ') || 'vazio'}</div>
-      ${host ? `<button class="btn btn-primary" ${(teamA.length<1||teamB.length<1)?'disabled':''} onclick="startQuemSouBattle()">Começar Quem Sou Eu (Times)</button>` : `<div class="banner center" style="margin-top:1rem;"><strong>Times organizados!</strong><br><span class="hint">Esperando o anfitrião(a) iniciar a partida...</span></div>`}
+      ${host ? `<button class="btn btn-primary" ${(teamA.length<1||teamB.length<1)?'disabled':''} onclick="startQuemSouBattle()">Começar Quem Sou Eu (${isEmpresa ? 'Firma — ' : ''}Times)</button>` : `<div class="banner center" style="margin-top:1rem;"><strong>Times organizados!</strong><br><span class="hint">Esperando o anfitrião(a) iniciar a partida...</span></div>`}
     ` : `
-      <p class="sub center">No modo Individual, <strong>cada jogador recebe um personagem secreto diferente</strong>! Façam perguntas de "Sim" ou "Não" uns para os outros para adivinhar quem vocês são!</p>
-      ${renderCategoryFilterHTML(g.filterCat)}
+      <p class="sub center">No modo Individual, <strong>cada jogador recebe um ${isEmpresa?'colega':'personagem'} secreto diferente</strong>! Façam perguntas de "Sim" ou "Não" uns para os outros para adivinhar quem vocês são!</p>
+      ${filterHTML}
       <div class="card mb">
         <label class="field-label">Jogadores na sala (${room.players.length})</label>
         <div style="display:flex; flex-wrap:wrap; gap:.5rem; margin-top:.4rem;">
@@ -2905,7 +3099,7 @@ function quemsouSetupScreen(){
           `).join('')}
         </div>
       </div>
-      ${host ? `<button class="btn btn-primary" onclick="startQuemSouBattle()">Começar Quem Sou Eu (Individual)</button>` : `<div class="banner center" style="margin-top:1rem;"><strong>Modo Individual selecionado!</strong><br><span class="hint">Esperando o anfitrião(a) iniciar a partida...</span></div>`}
+      ${host ? `<button class="btn btn-primary" onclick="startQuemSouBattle()">Começar Quem Sou Eu (${isEmpresa ? 'Firma — ' : ''}Individual)</button>` : `<div class="banner center" style="margin-top:1rem;"><strong>Modo Individual selecionado!</strong><br><span class="hint">Esperando o anfitrião(a) iniciar a partida...</span></div>`}
     `}
   `;
 }
@@ -2935,6 +3129,7 @@ async function startQuemSouBattle(){
     const mode = g.mode || 'teams';
     g.mode = mode;
     g.stage = 'play';
+    if(r.activeGame === 'quemsou_empresa') g.isEmpresa = true;
 
     if(mode === 'individual'){
       const individualChars = {};
@@ -2974,6 +3169,7 @@ async function startQuemSouBattle(){
 function quemsouPlayScreen(){
   const g = room.gameData || {};
   const mode = g.mode || 'teams';
+  const isEmpresa = (room && (room.activeGame === 'quemsou_empresa' || g.isEmpresa));
 
   if(mode === 'individual'){
     const chars = g.individualChars || {};
@@ -2985,23 +3181,23 @@ function quemsouPlayScreen(){
 
     let inner = `
       <p class="sub center" style="margin-bottom: 1rem;">
-        💬 Olhe os personagens dos seus amigos na tela e responda <strong>"Sim"</strong> ou <strong>"Não"</strong> para as perguntas deles!
+        💬 Olhe os ${isEmpresa?'colegas':'personagens'} dos seus amigos na tela e responda <strong>"Sim"</strong> ou <strong>"Não"</strong> para as perguntas deles!
       </p>
 
       <!-- Cartão do Próprio Jogador (Escondido para o próprio jogador) -->
       <div class="card center mb" style="border: 2px dashed var(--accent); background: rgba(139, 92, 246, 0.08); padding: 1.2rem 1rem;">
-        <div class="badge" style="background: var(--accent); color:#fff; font-size:.8rem; margin: 0 auto .4rem;">SEU PERSONAGEM SECRETO</div>
+        <div class="badge" style="background: var(--accent); color:#fff; font-size:.8rem; margin: 0 auto .4rem;">${isEmpresa?'SEU COLEGA SECRETO DA FIRMA':'SEU PERSONAGEM SECRETO'}</div>
         <div class="avatar center" style="background:${colorFor(me.id)}; margin:0 auto .4rem; width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:50%; font-weight:700; color:#fff;">${esc(initials(me.name))}</div>
         <label class="field-label" style="color:var(--accent); font-weight:700;">Quem é você?</label>
         <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.6rem; margin:.3rem 0 .2rem; color:var(--accent);">
           ❓ ? ? ? (Você NÃO sabe!)
         </p>
         <p class="hint" style="margin-top:.4rem; font-style:italic;">
-          Faça perguntas de "Sim" ou "Não" para a galera até descobrir quem você é!
+          Faça perguntas de "Sim" ou "Não" para a galera até descobrir qual ${isEmpresa?'colega':'personagem'} você é!
         </p>
       </div>
 
-      <div class="eyebrow center mb" style="margin-top: 1.4rem;">Personagens dos outros jogadores</div>
+      <div class="eyebrow center mb" style="margin-top: 1.4rem;">${isEmpresa?'Colegas sorteados para os outros jogadores':'Personagens dos outros jogadores'}</div>
       <p class="hint center mb" style="font-size:.82rem; margin-top:-.5rem;">Veja quem eles são e responda "Sim" ou "Não" pras perguntas deles:</p>
 
       <div class="other-players-list mb" style="display:flex; flex-direction:column; gap:.6rem;">
@@ -3016,7 +3212,7 @@ function quemsouPlayScreen(){
                 <div style="flex:1; overflow:hidden;">
                   <div style="font-weight:700; font-size:0.92rem; color:var(--text);">${esc(p.name)}</div>
                   <div style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.15rem; color:var(--secondary); text-overflow:ellipsis; overflow:hidden; white-space:nowrap;">
-                    🎭 ${esc(pChar)}
+                    ${formatQuemSouDisplayInline(pChar)}
                   </div>
                 </div>
               </div>
@@ -3027,7 +3223,7 @@ function quemsouPlayScreen(){
     `;
 
     if(isHost()){
-      inner += `<button class="btn btn-primary" onclick="revealQuemSou()">Revelar personagens e encerrar rodada</button>`;
+      inner += `<button class="btn btn-primary" onclick="revealQuemSou()">Revelar ${isEmpresa?'colegas':'personagens'} e encerrar rodada</button>`;
     } else {
       inner += `<p class="hint center" style="margin-top:.8rem;">O anfitrião(a) encerrará a rodada quando todos terminarem...</p>`;
     }
@@ -3064,12 +3260,12 @@ function quemsouPlayScreen(){
       <div class="card center mb" style="border: 2px dashed var(--secondary); background: rgba(6, 182, 212, 0.08); padding: 1.2rem 1rem;">
         <div class="badge" style="background: var(--secondary); color:#fff; font-size:.8rem; margin: 0 auto .4rem;">TIME 1 — SUA VEZ DE ADIVINHAR</div>
         <div class="avatar center" style="background:${colorFor(me.id)}; margin:0 auto .4rem; width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:50%; font-weight:700; color:#fff;">${esc(initials(me.name))}</div>
-        <label class="field-label" style="color:var(--secondary); font-weight:700;">Seu Personagem Secreto</label>
+        <label class="field-label" style="color:var(--secondary); font-weight:700;">${isEmpresa?'Seu Colega Secreto':'Seu Personagem Secreto'}</label>
         <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.6rem; margin:.3rem 0 .2rem; color:var(--secondary);">
           ❓ ? ? ? (Você NÃO sabe!)
         </p>
         <p class="hint" style="margin-top:.4rem; font-style:italic;">
-          Faça perguntas de "Sim" ou "Não" para o grupo até descobrir quem você é!
+          Faça perguntas de "Sim" ou "Não" para o grupo até descobrir qual ${isEmpresa?'colega':'personagem'} você é!
         </p>
       </div>
     `;
@@ -3077,10 +3273,10 @@ function quemsouPlayScreen(){
     inner += `
       <div class="card center mb" style="border: 1px solid rgba(6, 182, 212, 0.3); padding: 1.2rem 1rem;">
         <div class="badge" style="background: rgba(6, 182, 212, 0.2); color: var(--secondary); font-size:.78rem; margin: 0 auto .4rem;">TIME 1 — ${esc(playerAName)} adivinha</div>
-        <label class="field-label" style="font-weight:700; color:var(--dim);">Personagem Secreto do Time 1</label>
-        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.6rem; margin:.3rem 0; color:var(--secondary);">${esc(charA)}</p>
+        <label class="field-label" style="font-weight:700; color:var(--dim);">${isEmpresa?'Colega Secreto do Time 1':'Personagem Secreto do Time 1'}</label>
+        <div style="margin:.5rem 0;">${formatQuemSouDisplayBig(charA, 'var(--secondary)')}</div>
         <p class="hint" style="margin-top:.3rem; font-size:.82rem;">
-          🤫 <strong>${esc(playerAName)}</strong> NÃO sabe quem é este personagem. Responda as perguntas dele(a)!
+          🤫 <strong>${esc(playerAName)}</strong> NÃO sabe quem é. Responda as perguntas dele(a)!
         </p>
       </div>
     `;
@@ -3092,12 +3288,12 @@ function quemsouPlayScreen(){
       <div class="card center mb" style="border: 2px dashed var(--accent); background: rgba(139, 92, 246, 0.08); padding: 1.2rem 1rem;">
         <div class="badge" style="background: var(--accent); color:#fff; font-size:.8rem; margin: 0 auto .4rem;">TIME 2 — SUA VEZ DE ADIVINHAR</div>
         <div class="avatar center" style="background:${colorFor(me.id)}; margin:0 auto .4rem; width:44px; height:44px; display:flex; align-items:center; justify-content:center; border-radius:50%; font-weight:700; color:#fff;">${esc(initials(me.name))}</div>
-        <label class="field-label" style="color:var(--accent); font-weight:700;">Seu Personagem Secreto</label>
+        <label class="field-label" style="color:var(--accent); font-weight:700;">${isEmpresa?'Seu Colega Secreto':'Seu Personagem Secreto'}</label>
         <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.6rem; margin:.3rem 0 .2rem; color:var(--accent);">
           ❓ ? ? ? (Você NÃO sabe!)
         </p>
         <p class="hint" style="margin-top:.4rem; font-style:italic;">
-          Faça perguntas de "Sim" ou "Não" para o grupo até descobrir quem você é!
+          Faça perguntas de "Sim" ou "Não" para o grupo até descobrir qual ${isEmpresa?'colega':'personagem'} você é!
         </p>
       </div>
     `;
@@ -3105,17 +3301,17 @@ function quemsouPlayScreen(){
     inner += `
       <div class="card center mb" style="border: 1px solid rgba(139, 92, 246, 0.3); padding: 1.2rem 1rem;">
         <div class="badge" style="background: rgba(139, 92, 246, 0.2); color: var(--accent); font-size:.78rem; margin: 0 auto .4rem;">TIME 2 — ${esc(playerBName)} adivinha</div>
-        <label class="field-label" style="font-weight:700; color:var(--dim);">Personagem Secreto do Time 2</label>
-        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.6rem; margin:.3rem 0; color:var(--accent);">${esc(charB)}</p>
+        <label class="field-label" style="font-weight:700; color:var(--dim);">${isEmpresa?'Colega Secreto do Time 2':'Personagem Secreto do Time 2'}</label>
+        <div style="margin:.5rem 0;">${formatQuemSouDisplayBig(charB, 'var(--accent)')}</div>
         <p class="hint" style="margin-top:.3rem; font-size:.82rem;">
-          🤫 <strong>${esc(playerBName)}</strong> NÃO sabe quem é este personagem. Responda as perguntas dele(a)!
+          🤫 <strong>${esc(playerBName)}</strong> NÃO sabe quem é. Responda as perguntas dele(a)!
         </p>
       </div>
     `;
   }
 
   if(isHost()){
-    inner += `<button class="btn btn-primary" onclick="revealQuemSou()">Revelar personagens e encerrar rodada</button>`;
+    inner += `<button class="btn btn-primary" onclick="revealQuemSou()">Revelar ${isEmpresa?'colegas':'personagens'} e encerrar rodada</button>`;
   } else {
     inner += `<p class="hint center" style="margin-top:.8rem;">O anfitrião(a) encerrará a rodada quando terminarem as perguntas...</p>`;
   }
@@ -3130,14 +3326,15 @@ async function revealQuemSou(){
 function quemsouRevealScreen(){
   const g = room.gameData || {};
   const mode = g.mode || 'teams';
+  const isEmpresa = (room && (room.activeGame === 'quemsou_empresa' || g.isEmpresa));
 
   if(mode === 'individual'){
     const chars = g.individualChars || {};
     let inner = `
       <div class="card center mb">
-        <div style="font-size:2.2rem; margin-bottom:.3rem;">🎭</div>
+        <div style="font-size:2.2rem; margin-bottom:.3rem;">${isEmpresa?'🏢':'🎭'}</div>
         <label class="field-label">Resultado da Rodada (Individual)</label>
-        <p class="sub mb" style="margin-top:.2rem;">Personagens sorteados para cada jogador:</p>
+        <p class="sub mb" style="margin-top:.2rem;">${isEmpresa?'Colegas sorteados para cada jogador:':'Personagens sorteados para cada jogador:'}</p>
 
         <div style="display:flex; flex-direction:column; gap:.6rem; margin-top:1rem; text-align:left;">
           ${room.players.map(p => {
@@ -3150,8 +3347,8 @@ function quemsouRevealScreen(){
                   </div>
                   <span style="font-weight:700; color:var(--text); font-size:.95rem;">${esc(p.name)}</span>
                 </div>
-                <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.1rem; color:var(--secondary);">
-                  🎭 ${esc(pChar)}
+                <span style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.05rem; color:var(--secondary);">
+                  ${formatQuemSouDisplayInline(pChar)}
                 </span>
               </div>
             `;
@@ -3186,17 +3383,17 @@ function quemsouRevealScreen(){
 
   let inner = `
     <div class="card center mb">
-      <div style="font-size:2.2rem; margin-bottom:.3rem;">🎭</div>
+      <div style="font-size:2.2rem; margin-bottom:.3rem;">${isEmpresa?'🏢':'🎭'}</div>
       <label class="field-label">Resultado da Rodada</label>
       
-      <div style="margin: 1rem 0; padding: .8rem; background: rgba(6, 182, 212, 0.1); border-radius: 12px; border: 1px solid rgba(6, 182, 212, 0.3);">
+      <div style="margin: 1rem 0; padding: .9rem; background: rgba(6, 182, 212, 0.1); border-radius: 12px; border: 1px solid rgba(6, 182, 212, 0.3);">
         <span style="font-size: .8rem; color: var(--secondary); font-weight: 700; text-transform: uppercase;">Time 1 (${esc(playerAName)})</span>
-        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.4rem; margin:.2rem 0 0; color:var(--text);">${esc(charA)}</p>
+        <div style="margin-top:.4rem;">${formatQuemSouDisplayBig(charA, 'var(--text)')}</div>
       </div>
 
-      <div style="margin: .8rem 0; padding: .8rem; background: rgba(139, 92, 246, 0.1); border-radius: 12px; border: 1px solid rgba(139, 92, 246, 0.3);">
+      <div style="margin: .8rem 0; padding: .9rem; background: rgba(139, 92, 246, 0.1); border-radius: 12px; border: 1px solid rgba(139, 92, 246, 0.3);">
         <span style="font-size: .8rem; color: var(--accent); font-weight: 700; text-transform: uppercase;">Time 2 (${esc(playerBName)})</span>
-        <p style="font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:1.4rem; margin:.2rem 0 0; color:var(--text);">${esc(charB)}</p>
+        <div style="margin-top:.4rem;">${formatQuemSouDisplayBig(charB, 'var(--text)')}</div>
       </div>
     </div>
   `;
@@ -3218,6 +3415,7 @@ async function nextQuemSouRound(){
   await updateRoom(r=>{
     const g = r.gameData || {};
     const mode = g.mode || 'teams';
+    if(r.activeGame === 'quemsou_empresa') g.isEmpresa = true;
 
     if(mode === 'individual'){
       const individualChars = {};
